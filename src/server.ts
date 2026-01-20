@@ -1,41 +1,33 @@
-import 'zone.js/node';  // Required for Angular Universal
-import { enableProdMode } from '@angular/core';
-import express from 'express';  // Correct import for Express
-import { join } from 'path';
-import { readFileSync } from 'fs';
-import { ngExpressEngine } from '@nguniversal/express-engine';
-import { App } from './app/app';  // Ensure this file exists and is correctly imported
-import { environment } from './environments/environment';
-
-if (environment.production) {
-  enableProdMode();
-}
+import 'zone.js/node';
+import express from 'express';
+import { renderModule } from '@angular/platform-server';import { join } from 'path';
+import {App } from './app/app';  // Make sureApp is set up for SSR
+import { environment } from './environments/environment'; // Ensure to import the environment configuration
 
 const app = express();
+const DIST = join(process.cwd(), 'dist/browser');  // Path to the browser build output
 
-// Path to the dist folder where the Angular app is built
-const DIST_FOLDER = join(process.cwd(), 'dist/browser');
-const indexHtml = readFileSync(join(DIST_FOLDER, 'index.html'), 'utf-8');
+// Serve static assets (images, CSS, JS, etc.)
+app.get('*.*', express.static(DIST, { maxAge: '1y' }));
 
-// Serve static files (images, css, js)
-app.get('*.*', express.static(DIST_FOLDER, {
-  maxAge: '1y'
-}));
+// Handle all requests for SSR
+app.get('*', async (req, res) => {
+  try {
+    // Render the app for SSR (Server-Side Rendering)
+    const html = await renderModule(App, {
+      url: req.url,  // The requested URL
+      document: '<app-root></app-root>'  // Your main Angular root component
+    });
 
-// Set up Angular Universal engine for SSR (using ngExpressEngine)
-app.engine('html', ngExpressEngine({
-  bootstrap: App
-}));
-
-app.set('view engine', 'html');
-app.set('views', DIST_FOLDER);
-
-// Universal route (this will render Angular Universal pages)
-app.get('*', (req: express.Request, res: express.Response) => {
-  res.render('index', { req, res });
+    // Send the rendered HTML back to the client
+    res.send(html);
+  } catch (err) {
+    console.error('SSR error:', err);
+    res.status(500).send('Server error during rendering');
+  }
 });
 
-// Start the server
+// Start the Express server
 app.listen(4000, () => {
-  console.log('Angular Universal server is running at http://localhost:4000');
+  console.log('SSR is running on http://localhost:4000');
 });
