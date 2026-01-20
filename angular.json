@@ -17,6 +17,12 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "routes": [
+              "/product/1",
+              "/product/2",
+              "/product/3",
+              "/product/4"
+            ],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
