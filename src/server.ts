@@ -1,29 +1,34 @@
-import 'zone.js/node';  // Import zone.js for SSR
-import express from 'express';  // Import Express
-import { renderModule } from '@angular/platform-server';  // Import renderModule from @angular/platform-server
-import { join } from 'path';  // Path module for setting up file paths
-import { App } from './app/app';  // Import the server module (not just the root component)
-import { environment } from './environments/environment';  // Ensure the environment configuration is correct
+import 'zone.js/node';
+import express from 'express';
+import { renderModule } from '@angular/platform-server';  // This is for SSR
+import { join } from 'path';
+import { App } from './app/app';  // SSR module
+import { environment } from './environments/environment';  // Environment setup
 
 const app = express();
-const DIST = join(process.cwd(), 'dist/browser');  // Path to the browser build output
+const DIST = join(process.cwd(), 'dist/browser');  // Path to browser build output
 
 // Serve static files (images, CSS, JS, etc.)
 app.get('*.*', express.static(DIST, { maxAge: '1y' }));
 
-// Handle all requests for SSR
+// Handle all requests for SSR rendering
 app.get('*', async (req, res) => {
   try {
-    // Render the app for SSR (Server-Side Rendering) with App
-    const html = await renderModule(App, {  // Pass App (SSR version)
+    console.log('Request URL:', req.url);  // Log the requested URL
+
+    // Render the app for SSR (Server-Side Rendering)
+    const html = await renderModule(App, {
       url: req.url,  // The requested URL
-      document: '<app-root></app-root>'  // Root Angular component to render
+      document: '<app-root></app-root>'  // Template for the app
     });
+
+    // Log the rendered HTML
+    console.log('Rendered HTML:', html);
 
     // Send the rendered HTML back to the client
     res.send(html);
   } catch (err) {
-    console.error('SSR error:', err);
+    console.error('SSR error:', err);  // Log any errors
     res.status(500).send('Server error during rendering');
   }
 });
