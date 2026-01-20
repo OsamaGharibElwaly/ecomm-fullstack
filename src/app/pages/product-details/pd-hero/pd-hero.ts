@@ -13,6 +13,10 @@ export class PdHeroComponent {
 
   active = 0;
 
+  get currentImage(): string {
+    return this.images[this.active] || this.images[0];
+  }
+
   setActive(i: number) {
     this.active = i;
   }
