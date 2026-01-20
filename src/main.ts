@@ -1,8 +1,13 @@
+import { enableProdMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
-import { App } from './app/app';
-import { routes } from './app/app.routes';
+import { App } from './app/app';  // The root component
+import { environment } from './environments/environment';
 
-bootstrapApplication(App, {
-  providers: [provideRouter(routes)],
-}).catch(console.error);
+// Enable production mode if environment is production
+if (environment.production) {
+  enableProdMode();
+}
+
+// Bootstrapping the Angular application
+bootstrapApplication(App)
+  .catch(err => console.error(err));
