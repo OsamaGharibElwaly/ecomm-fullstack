@@ -1,0 +1,83 @@
+import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+import { PageTopbarComponent } from '../../shared/ui/page-topbar/page-topbar';
+import { CartService } from '../../shared/data/cart';
+import { FavoritesService, FavoriteItem } from '../../shared/data/favorites';
+
+@Component({
+  selector: 'app-favorites-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    PageTopbarComponent,
+  ],
+  templateUrl: './favorites.html',
+})
+export class FavoritesPage {
+  private router = inject(Router);
+  private cart = inject(CartService);
+  private favoritesService = inject(FavoritesService);
+
+  cartCount = this.cart.count;
+  
+  isLoading = signal(true);
+  favorites = this.favoritesService.favorites;
+  favoriteCount = computed(() => this.favorites().length);
+
+  constructor() {
+    // Simulate loading delay for better UX
+    setTimeout(() => this.isLoading.set(false), 800);
+  }
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
+
+  goToProduct(productId: string) {
+    this.router.navigate(['/product', productId]);
+  }
+
+  removeFavorite(event: Event, productId: string) {
+    event.stopPropagation();
+    this.favoritesService.removeFavorite(productId);
+  }
+
+  quickAddToCart(event: Event, item: FavoriteItem) {
+    event.stopPropagation();
+    
+    this.cart.add(
+      {
+        id: item.id,
+        title: item.title,
+        subtitle: '',
+        price: item.price,
+        imageUrl: item.imageUrl,
+        badge: item.badge ?? '',
+      },
+      1
+    );
+  }
+
+  clearAllFavorites() {
+    if (confirm('Are you sure you want to remove all favorites?')) {
+      this.favoritesService.clearAll();
+    }
+  }
+
+  getRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+    return `${Math.floor(diffDays / 30)}mo ago`;
+  }
+}

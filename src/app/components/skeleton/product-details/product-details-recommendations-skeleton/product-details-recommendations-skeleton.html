@@ -1,0 +1,11 @@
+<div class="mt-12 animate-pulse">
+  <!-- Title -->
+  <div class="h-9 w-64 bg-gray-300 rounded-xl mb-6"></div>
+
+  <!-- Cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+    @for (_ of [1,2,3,4]; track $index) {
+      <div class="aspect-[3/4] bg-gray-200 rounded-2xl"></div>
+    }
+  </div>
+</div>

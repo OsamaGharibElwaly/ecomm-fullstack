@@ -1,0 +1,27 @@
+<div class="rounded-3xl bg-white/70 backdrop-blur shadow-sm p-4 sm:p-6">
+  <div class="space-y-2">
+    <div class="flex items-center justify-between text-sm sm:text-base text-[#6B7280]">
+      <span>Subtotal</span>
+      <span class="font-extrabold text-[#111827]">${{ subtotal.toFixed(2) }}</span>
+    </div>
+
+    <div class="flex items-center justify-between text-sm sm:text-base text-[#6B7280]">
+      <span>Shipping</span>
+      <span class="font-extrabold text-emerald-600">{{ shippingLabel }}</span>
+    </div>
+
+    @if (discount > 0) {
+      <div class="flex items-center justify-between text-sm sm:text-base text-[#6B7280]">
+        <span>Discount</span>
+        <span class="font-extrabold text-[#111827]">-${{ discount.toFixed(2) }}</span>
+      </div>
+    }
+
+    <div class="my-3 h-px bg-[#E5E7EB]"></div>
+
+    <div class="flex items-end justify-between">
+      <div class="text-lg sm:text-xl font-extrabold text-[#111827]">Total</div>
+      <div class="text-2xl sm:text-3xl font-extrabold text-[#111827]">${{ total.toFixed(2) }}</div>
+    </div>
+  </div>
+</div>

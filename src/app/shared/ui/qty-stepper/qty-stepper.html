@@ -1,0 +1,15 @@
+<div>
+  <div class="text-xs font-extrabold tracking-widest text-[#6B7280]">{{ title }}</div>
+
+  <div class="mt-3 flex items-center justify-between rounded-full bg-[#F7F3EF] px-4 h-12">
+    <button type="button" (click)="dec()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" aria-label="minus">
+      <span class="text-[#FF7A00] text-xl font-extrabold">−</span>
+    </button>
+
+    <div class="font-extrabold text-[#111827]">{{ value }}</div>
+
+    <button type="button" (click)="inc()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" aria-label="plus">
+      <span class="text-[#FF7A00] text-xl font-extrabold">+</span>
+    </button>
+  </div>
+</div>

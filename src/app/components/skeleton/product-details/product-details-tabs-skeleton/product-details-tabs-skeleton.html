@@ -1,0 +1,19 @@
+<div class="pt-8 border-t border-gray-200 animate-pulse">
+  <!-- Tabs bar -->
+  <div class="flex gap-10 overflow-x-auto pb-2">
+    @for (_ of [1,2,3]; track $index) {
+      <div class="h-9 w-40 bg-gray-300 rounded flex-shrink-0"></div>
+    }
+  </div>
+  <div class="h-1 w-40 bg-gray-300 rounded mt-2"></div>
+
+  <!-- Tab content placeholder -->
+  <div class="pt-6 space-y-4">
+    <div class="h-6 w-60 bg-gray-300 rounded"></div>
+    <div class="space-y-3">
+      <div class="h-5 w-full bg-gray-300 rounded"></div>
+      <div class="h-5 w-full bg-gray-300 rounded"></div>
+      <div class="h-5 w-5/6 bg-gray-300 rounded"></div>
+    </div>
+  </div>
+</div>

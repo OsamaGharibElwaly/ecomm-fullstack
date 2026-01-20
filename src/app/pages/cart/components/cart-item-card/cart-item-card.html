@@ -1,0 +1,74 @@
+<div
+  class="relative rounded-3xl bg-white/70 backdrop-blur shadow-sm
+         p-4 sm:p-6 mb-6 sm:mb-10"
+>
+  <!-- Remove (floating) -->
+  <button
+    type="button"
+    class="
+      absolute -top-3 -right-3 sm:-top-4 sm:-right-4
+      grid place-items-center
+      h-9 w-9 sm:h-10 sm:w-10
+      rounded-full bg-black text-white
+      shadow-md  active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-black/20
+    cursor-pointer
+    hover:bg-black/70"
+    (click)="onRemove()"
+    aria-label="Remove"
+  >
+    ✕
+  </button>
+
+  <div class="flex items-start gap-4 sm:gap-6">
+    <!-- Image -->
+    <div
+      class="relative h-20 w-20 sm:h-24 sm:w-24
+             shrink-0 overflow-hidden rounded-2xl bg-[#F3F4F6]"
+    >
+      <img
+        [src]="item.imageUrl"
+        [alt]="item.title"
+        class="h-full w-full object-cover"
+        loading="lazy"
+      />
+
+      @if (item.badge) {
+        <div
+          class="absolute left-2 top-2 rounded-full bg-[#FFC400]
+                 px-2 py-1 text-[10px] font-extrabold text-black"
+        >
+          {{ item.badge }}
+        </div>
+      }
+    </div>
+
+    <!-- Content -->
+    <div class="min-w-0 flex-1">
+      <!-- Title + subtitle -->
+      <div class="min-w-0">
+        <div class="text-base sm:text-lg font-extrabold text-[#111827] truncate">
+          {{ item.title }}
+        </div>
+        <div class="mt-1 text-sm text-[#6B7280] truncate">
+          {{ item.subtitle }}
+        </div>
+      </div>
+
+      <!-- Price + stepper -->
+      <div class="mt-4 flex items-center justify-between gap-3">
+        <div class="text-lg sm:text-xl font-extrabold text-[#FF7A00]">
+          ${{ item.price.toFixed(2) }}
+        </div>
+
+        <div class="shrink-0">
+          <app-qty-stepper
+            title=""
+            [value]="item.qty"
+            (valueChange)="onQtyChange($event)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

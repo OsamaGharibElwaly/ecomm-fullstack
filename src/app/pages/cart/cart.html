@@ -1,0 +1,84 @@
+<div class="min-h-screen bg-[#F7F3EF] overflow-x-hidden">
+  <div class="pb-[calc(10.5rem+env(safe-area-inset-bottom))]">
+    <div class="mx-auto w-full max-w-[960px] px-4 pt-4 sm:px-6 sm:pt-6">
+
+      <!-- Topbar -->
+      <app-page-topbar
+        title="Shopping Cart"
+        [cartCount]="itemsSelected()"
+        backLink="/"
+      />
+
+      <!-- Items badge -->
+      <div class="mt-3 flex items-center justify-center">
+        <div
+          class="rounded-full bg-white/60 px-4 py-2 text-sm text-[#6B7280] backdrop-blur"
+        >
+          {{ itemsSelected() }} Items Selected
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div class="mt-6 space-y-4 sm:space-y-6 mb-10">
+        @if (isLoading()) {
+          <app-cart-items-skeleton />
+        } @else {
+          @for (item of cart(); track item.id) {
+            <app-cart-item-card
+              [item]="item"
+              (remove)="onRemove($event)"
+              (qtyChange)="onQtyChange(item.id, $event)"
+            />
+          }
+        }
+      </div>
+
+      <!-- Promo -->
+      <div class="mt-7 sm:mt-8">
+        @if (!isLoading()) {
+          <app-promo-code-box
+            [value]="promoCode()"
+            [applied]="promoApplied()"
+            (valueChange)="onPromoChange($event)"
+            (apply)="onApplyPromo()"
+          />
+        }
+      </div>
+
+      <!-- Suggestions -->
+      <div class="mt-9 sm:mt-10">
+        <div class="text-lg sm:text-xl font-extrabold text-[#111827]">
+          Frequently bought together
+        </div>
+
+        <div class="mt-4 sm:mt-5">
+          @if (isLoading()) {
+            <app-cart-suggestions-skeleton />
+          } @else {
+            <app-bought-together-row [items]="suggestions()" />
+          }
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="mt-9 sm:mt-10">
+        @if (isLoading()) {
+          <app-cart-summary-skeleton />
+        } @else {
+          <app-order-summary
+            [subtotal]="subtotal()"
+            [discount]="discount()"
+            [shippingLabel]="shippingLabel()"
+            [total]="total()"
+          />
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <app-sticky-checkout-bar
+    [total]="total()"
+    (checkout)="onCheckout()"
+  />
+</div>

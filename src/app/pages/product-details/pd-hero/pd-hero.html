@@ -1,0 +1,32 @@
+<section class="overflow-hidden rounded-3xl bg-[#FF7A00] shadow-sm">
+  <div class="relative">
+    <img
+      class="w-full object-cover
+             h-[320px] sm:h-[380px] md:h-[420px] lg:h-[520px]"
+      [src]="images[active] ?? images[0]"
+      alt="Product"
+    />
+
+    <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/20"></div>
+
+    @if (badge) {
+      <span class="absolute left-4 top-4 rounded-full bg-[#FFD400] text-[#111827] font-extrabold text-xs sm:text-sm px-4 py-2 shadow">
+        {{ badge }}
+      </span>
+    }
+  </div>
+
+  <!-- Dots -->
+  <div class="flex justify-center gap-2 py-3 bg-white/10">
+    @for (img of images; track $index) {
+      <button
+        type="button"
+        (click)="setActive($index)"
+        class="h-2.5 w-2.5 rounded-full transition"
+        [class.bg-white]="$index === active"
+        [class.bg-white/40]="$index !== active"
+        aria-label="image dot"
+      ></button>
+    }
+  </div>
+</section>

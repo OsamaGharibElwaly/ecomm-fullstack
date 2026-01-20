@@ -1,0 +1,143 @@
+<div class="min-h-screen w-full bg-[#FFF3E8] pb-24 overflow-x-hidden">
+  <div class="mx-auto w-full max-w-[1440px] px-4 pt-6 sm:px-6 lg:px-8">
+
+    <!-- Header with Favorites & Cart -->
+    <app-app-header 
+      [cartCount]="cartCount()" 
+      [favoriteCount]="favoriteCount()"
+      (favoritesClick)="goToFavorites()"
+    />
+
+    <div class="mt-5 grid min-w-0 gap-5 lg:gap-6 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+      
+      <!-- Main column (left side) -->
+      <div class="min-w-0">
+        <!-- Search bar – ثابت أو skeleton صغير لو عايز -->
+        <app-search-bar
+          placeholder="Search for products, brands..."
+          [value]="search()"
+          (valueChange)="onSearch($event)"
+        />
+
+        <!-- Hero – loading منفصل -->
+        @if (isLoadingHero()) {
+          <app-home-hero-skeleton />
+        } @else {
+          <div class="mt-5">
+            <app-hero-banner
+              badgeText="LIMITED OFFER"
+              title="Summer Collection 2024"
+              subtitle="Up to 50% Off on selected items"
+              ctaText="Shop Now"
+              imageUrl="https://picsum.photos/seed/banner/1200/700"
+            />
+          </div>
+        }
+
+        <!-- Categories – loading منفصل -->
+        @if (isLoadingCategories()) {
+          <app-home-categories-skeleton />
+        } @else {
+          <div class="mt-7 min-w-0">
+            <app-section-header title="Categories" actionText="View all" actionLink="/" />
+            <div class="mt-4 min-w-0">
+              <app-category-chips
+                [items]="categories()"
+                [activeId]="activeCategoryId()"
+                (activeIdChange)="onCategoryChange($event)"
+              />
+            </div>
+          </div>
+        }
+
+        <!-- Featured Products – loading منفصل -->
+        @if (isLoadingProducts()) {
+          <app-home-featured-products-skeleton />
+        } @else {
+          <div class="mt-7 min-w-0">
+            <app-section-header title="Featured Products" icon="filter" />
+            <div class="mt-4 grid min-w-0 gap-4 sm:gap-5 lg:gap-6 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+              @for (p of filteredProducts(); track p.id) {
+                <div class="min-w-0 w-full overflow-hidden">
+                  <app-product-card
+                    [product]="{
+                      ...p,
+                      badge: (p.badge === 'NEW' || p.badge === 'SALE') ? p.badge : undefined
+                    }"
+                    [isFavorite]="isFavorite(p.id)"
+                    (click)="onProductClick(p.id)"
+                    (toggleLike)="onToggleLike(p.id)"
+                    (addToCart)="onAddToCart(p.id)"
+                    (imgError)="onImgError($event)"
+                  />
+                </div>
+              } @empty {
+                <div class="col-span-full py-12 text-center text-gray-500">
+                  No products found.
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Login prompt – ثابت -->
+        <div class="mt-8 text-center">
+          <p class="text-lg text-[#1E1E1E]">
+            Don't have an account?
+            <a routerLink="/auth/login" class="text-[#FF7A00] font-bold hover:underline">Login here</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Sidebar (desktop only) – loading منفصل -->
+      <aside class="hidden lg:block min-w-0">
+          <!-- Hot Deal real -->
+          <div class="rounded-3xl bg-white shadow-sm p-5">
+            <div class="text-sm font-extrabold text-[#FF7A00]">HOT DEAL</div>
+            <div class="mt-2 text-2xl font-extrabold text-[#1E1E1E] leading-tight">
+              Extra 20% off<br />for Members
+            </div>
+            <div class="mt-2 text-sm text-[#6B7280]">
+              Subscribe to get exclusive offers and early access.
+            </div>
+            <button type="button" class="mt-4 w-full rounded-2xl bg-[#FF7A00] px-5 py-3 text-white font-bold shadow active:scale-95 transition">
+              Join Now
+            </button>
+          </div>
+
+          <!-- Trending real -->
+          <div class="mt-5 rounded-3xl bg-white shadow-sm p-5">
+            <div class="flex items-center justify-between">
+              <div class="text-lg font-extrabold text-[#1E1E1E]">Trending</div>
+              <a routerLink="/" class="text-sm font-bold text-[#FF7A00]">See all</a>
+            </div>
+            <div class="mt-4 space-y-3">
+              @for (p of filteredProducts().slice(0, 3); track p.id) {
+                <a
+                  [routerLink]="['/product', p.id]"
+                  class="flex items-center gap-3 rounded-2xl p-2 hover:bg-[#FFF3E8] transition"
+                >
+                  <img
+                    class="h-14 w-14 rounded-2xl object-cover bg-gray-100"
+                    [src]="p.imageUrl"
+                    [alt]="p.title"
+                    (error)="onImgError($event)"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <div class="text-sm font-extrabold text-[#1E1E1E] truncate">{{ p.title }}</div>
+                    <div class="text-sm font-extrabold text-[#FF7A00]">\${{ p.price }}</div>
+                  </div>
+                </a>
+              } @empty {
+                <div class="text-sm text-gray-500 py-2">No trending items</div>
+              }
+            </div>
+          </div>
+        
+      </aside>
+    </div>
+
+  </div>
+
+  <app-bottom-nav />
+</div>

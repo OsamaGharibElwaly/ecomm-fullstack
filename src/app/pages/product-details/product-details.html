@@ -1,0 +1,139 @@
+<div class="min-h-screen bg-[#F7F3EF] overflow-x-hidden">
+  <div class="pb-[calc(8rem+env(safe-area-inset-bottom))]">
+
+    <div class="mx-auto w-full max-w-[1200px] px-3 pt-3 sm:px-6 sm:pt-4 md:px-6">
+      <app-page-topbar
+        title="Product Details"
+        [cartCount]="cartCount()"
+        backLink="/"
+      />
+
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:gap-5 md:gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:items-start">
+
+        <!-- Hero -->
+        <div class="min-w-0 lg:sticky lg:top-6">
+          <div class="w-full overflow-hidden rounded-3xl">
+            <app-pd-hero
+              [badge]="product().badge"
+              [images]="product().images"
+            />
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="min-w-0 rounded-3xl bg-white/70 backdrop-blur p-4 sm:p-6 shadow-sm">
+          <app-pd-info
+            [title]="product().title"
+            [price]="product().price"
+            [oldPrice]="product().oldPrice"
+            [rating]="product().rating"
+            [reviewsCount]="product().reviewsCount"
+            [liked]="liked()"
+            (toggleLike)="onToggleLike()"
+          />
+
+          <p class="mt-4 text-[#6B7280] text-sm sm:text-base leading-relaxed">
+            {{ product().description }}
+          </p>
+
+          <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <app-color-variants
+              title="COLOR VARIANT"
+              [items]="colors()"
+              [activeId]="activeColorId()"
+              (activeIdChange)="onColorChange($event)"
+            />
+
+            @if (isLoadingProduct()) {
+              <app-product-details-qty-stepper-skeleton />
+            } @else {
+              <app-qty-stepper
+                title="QUANTITY"
+                [value]="qty()"
+                (valueChange)="onQtyChange($event)"
+              />
+            }
+          </div>
+
+          <div class="mt-6">
+            @if (isLoadingProduct()) {
+              <app-product-details-tabs-skeleton />
+            } @else {
+              <div class="min-w-0 overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                <div class="min-w-max">
+                  <app-tabs
+                    [tabs]="[
+                      { key: 'description', label: 'Description' },
+                      { key: 'specs', label: 'Specifications' },
+                      { key: 'reviews', label: reviewsLabel() }
+                    ]"
+                    [active]="activeTab()"
+                    (activeChange)="onTabChange($event)"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-4">
+                @switch (activeTab()) {
+                  @case ('description') {
+                    <div class="text-sm sm:text-base text-[#374151] leading-relaxed">
+                      This limited-edition headset features custom-tuned drivers that deliver high-fidelity sound.
+                      The memory foam ear cups provide lasting comfort for marathon gaming sessions.
+                    </div>
+                  }
+                  @case ('specs') {
+                    <ul class="space-y-2 text-sm sm:text-base text-[#374151]">
+                      @for (s of product().specifications || []; track $index) {
+                        <li class="flex gap-2 min-w-0">
+                          <span class="mt-2 h-2 w-2 rounded-full bg-[#FF7A00] shrink-0"></span>
+                          <span class="min-w-0 break-words">{{ s }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                  @case ('reviews') {
+                    <div class="text-sm sm:text-base text-[#374151]">
+                      Reviews section placeholder — will be wired to backend later.
+                    </div>
+                  }
+                  @default {
+                    <div class="text-sm text-[#374151]">—</div>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mt-8">
+            <div class="text-xl sm:text-2xl font-extrabold text-[#111827]">
+              You May Also Like
+            </div>
+
+            <div class="mt-4 min-w-0">
+              @if (isLoadingRecommendations()) {
+                <app-product-details-recommendations-skeleton />
+              } @else {
+                <div class="min-w-0 overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                  <div class="min-w-max">
+                    <app-recommendation-row [items]="recommendations()" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (isLoadingProduct()) {
+      <app-product-details-sticky-cart-skeleton />
+    } @else {
+      <app-sticky-add-to-cart
+        [price]="product().price"
+        [qty]="qty()"
+        (add)="addToCart()"
+      />
+    }
+
+  </div>
+</div>

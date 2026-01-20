@@ -1,0 +1,28 @@
+<div class="fixed bottom-0 inset-x-0 bg-[#F7F3EF]/90 backdrop-blur border-t border-[#E5E7EB]">
+  <div class="mx-auto w-full px-4 py-4 sm:px-6 md:max-w-[1024px] lg:max-w-[1200px] xl:max-w-[1400px]">
+    <div class="flex items-center gap-3">
+      <!-- share -->
+      <button class="h-12 w-12 rounded-2xl bg-white shadow-sm grid place-items-center active:scale-95 transition" aria-label="share">
+        <svg class="h-6 w-6 text-[#FF7A00]" viewBox="0 0 24 24" fill="none">
+          <path d="M15 8a3 3 0 1 0-2.8-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 12l12-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 12l12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 12a3 3 0 1 0 0 .1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- add to cart -->
+      <button
+        (click)="add.emit()"
+        class="flex-1 h-12 rounded-2xl bg-[#FF7A00] text-white font-extrabold shadow active:scale-95 transition inline-flex items-center justify-center gap-2"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+          <path d="M6 7h15l-2 8H8L6 7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M6 7 5 3H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add to Cart
+        <span class="ml-2 opacity-95">({{ qty }} × {{ fmt(price) }})</span>
+      </button>
+    </div>
+  </div>
+</div>
