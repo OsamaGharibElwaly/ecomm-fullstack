@@ -1,8 +1,13 @@
-import { BootstrapContext, bootstrapApplication } from '@angular/platform-browser';
-import { App } from './app/app';
-import { config } from './app/app.config.server';
+import { enableProdMode } from '@angular/core';
+import { platformServer } from '@angular/platform-server';
+import { App } from './app/app';  // SSR module
+import { environment } from './environments/environment';
 
-const bootstrap = (context: BootstrapContext) =>
-    bootstrapApplication(App, config, context);
+// Enable production mode if environment is production
+if (environment.production) {
+  enableProdMode();
+}
 
-export default bootstrap;
+// Bootstrap the Angular application for the server (SSR)
+platformServer().bootstrapModule(App)  // Use App for SSR
+  .catch(err => console.error('SSR bootstrapping failed', err));
