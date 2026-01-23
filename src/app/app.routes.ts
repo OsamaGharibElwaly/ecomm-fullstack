@@ -34,9 +34,10 @@ export const routes: Routes = [
       import('./pages/favorites/favorites').then(m => m.FavoritesPage),
   },
 
-  // Wildcard route to redirect any unknown paths to the home page
+  // 404 Not Found page route
   {
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./pages/not-found/not-found').then((m) => m.NotFoundPage),
   },
 ];
