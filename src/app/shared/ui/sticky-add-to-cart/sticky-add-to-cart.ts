@@ -10,5 +10,8 @@ export class StickyAddToCartComponent {
   @Input() qty = 1;
   @Output() add = new EventEmitter<void>();
 
-  fmt(n: number) { return `$${n.toFixed(2)}`; }
+  fmt(n: number) {
+    const v = (n != null && typeof n === 'number') ? n : 0;
+    return `$${v.toFixed(2)}`;
+  }
 }

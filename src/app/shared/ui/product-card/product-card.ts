@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { RatingStars } from '../rating-stars/rating-stars';
 
 type Product = {
   id: string;
@@ -17,7 +18,7 @@ type Product = {
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, RatingStars],
   templateUrl: './product-card.html',
 })
 export class ProductCard {
@@ -33,9 +34,10 @@ export class ProductCard {
 
 
   formatPrice(n: number) {
+    const v = (n != null && typeof n === 'number') ? n : 0;
     const c = this.product.currency ?? '$';
-    if (c === '$') return `$${n.toFixed(2)}`;
-    return `${n.toFixed(2)} ${c}`;
+    if (c === '$') return `$${v.toFixed(2)}`;
+    return `${v.toFixed(2)} ${c}`;
   }
   onToggleLike(event: Event) {
     event.stopPropagation();

@@ -7,12 +7,33 @@
       alt="Product"
     />
 
+    @if (selectedColorHex) {
+      <div
+        class="absolute inset-0 pointer-events-none"
+        [style.background-color]="selectedColorHex"
+        style="opacity: 0.14"
+        aria-hidden="true"
+      ></div>
+    }
+
     <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/20"></div>
 
     @if (badge) {
       <span class="absolute left-4 top-4 rounded-full bg-[#FFD400] text-[#111827] font-extrabold text-xs sm:text-sm px-4 py-2 shadow">
         {{ badge }}
       </span>
+    }
+
+    @if (selectedColorHex) {
+      <span
+        class="absolute left-4 rounded-xl border-2 border-white shadow-lg z-10"
+        [class.top-4]="!badge"
+        [class.top-16]="!!badge"
+        [style.background]="selectedColorHex"
+        [style.width]="'40px'"
+        [style.height]="'40px'"
+        [attr.aria-label]="'Selected color'"
+      ></span>
     }
   </div>
 

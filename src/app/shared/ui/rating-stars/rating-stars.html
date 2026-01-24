@@ -1,1 +1,14 @@
-<p>rating-stars works!</p>
+<span class="rating-stars inline-flex items-center gap-px" aria-label="{{ rating }} out of 5 stars">
+  @for (i of [1,2,3,4,5]; track i) {
+    @if (i <= fullStars) {
+      <span class="text-[#F59E0B]">★</span>
+    } @else if (hasHalfStar && i === fullStars + 1) {
+      <span class="star-half">
+        <span class="star-half-bg">☆</span>
+        <span class="star-half-fill">★</span>
+      </span>
+    } @else {
+      <span class="text-[#E5E7EB]">☆</span>
+    }
+  }
+</span>

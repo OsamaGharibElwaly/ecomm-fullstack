@@ -87,6 +87,12 @@ export class ProductDetailsPage {
     return c?.name ?? '';
   });
 
+  /** Hex of the selected color for hero overlay and chip. */
+  activeColorHex = computed(() => {
+    const c = this.colors().find((x) => x.id === this.activeColorId());
+    return c?.hex ?? null;
+  });
+
   recommendations = signal<MiniProduct[]>([]);
 
   reviewsLabel = computed(() => `Reviews (${this.p().reviewsCount})`);
@@ -133,14 +139,16 @@ export class ProductDetailsPage {
       this.activeColorId.set(details.colors[0]?.id ?? '');
       this.isLoadingProduct.set(false);
 
-      this.productsApi.getProducts({ page: 1, limit: 10, category: details.category }).subscribe((res) => {
+      // Only pass category if API accepts it (CLOTHING, ELECTRONICS, GAMING). Omit for 'General' etc.
+      const cat = ['CLOTHING','ELECTRONICS','GAMING'].includes(details.category) ? details.category : undefined;
+      this.productsApi.getProducts({ page: 1, limit: 10, category: cat }).subscribe((res) => {
         const list = res.list
           .filter((x) => String(x.id) !== details.id)
           .slice(0, 6)
           .map((x) => ({
             id: String(x.id),
             title: x.name || '',
-            price: x.price,
+            price: Number(x?.price) || 0,
             imageUrl: x.images?.[0] ?? `https://picsum.photos/seed/${x.id}/300/400`,
           }));
         this.recommendations.set(list);

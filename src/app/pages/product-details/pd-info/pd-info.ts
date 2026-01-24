@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RatingStars } from '../../../shared/ui/rating-stars/rating-stars';
 
 @Component({
   selector: 'app-pd-info',
   standalone: true,
+  imports: [RatingStars],
   templateUrl: './pd-info.html',
 })
 export class PdInfoComponent {
@@ -17,8 +19,9 @@ export class PdInfoComponent {
   @Output() toggleLike = new EventEmitter<void>();
 
   format(n: number) {
+    const v = (n != null && typeof n === 'number') ? n : 0;
     const c = this.currency ?? '$';
-    if (c === '$') return `$${n.toFixed(2)}`;
-    return `${n.toFixed(2)} ${c}`;
+    if (c === '$') return `$${v.toFixed(2)}`;
+    return `${v.toFixed(2)} ${c}`;
   }
 }

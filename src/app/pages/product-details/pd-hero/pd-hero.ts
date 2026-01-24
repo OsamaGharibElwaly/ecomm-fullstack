@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 export class PdHeroComponent {
   @Input() badge?: string;
   @Input({ required: true }) images!: string[];
+  /** Hex of selected color variant; when set, shows a tint overlay and a color chip on the image. */
+  @Input() selectedColorHex?: string | null;
 
   active = 0;
 

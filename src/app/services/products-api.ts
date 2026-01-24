@@ -106,8 +106,10 @@ export class ProductsApiService {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
       .set('limit', String(params.limit));
-    if (params.category && params.category !== 'all')
-      httpParams = httpParams.set('category', params.category);
+    // API accepts only CLOTHING, ELECTRONICS, GAMING. Omit 'all' and 'General'.
+    const cat = params.category;
+    if (cat && cat !== 'all' && cat !== 'General' && ['CLOTHING','ELECTRONICS','GAMING'].includes(cat))
+      httpParams = httpParams.set('category', cat);
     if (params.sortBy) httpParams = httpParams.set('sortBy', params.sortBy);
     if (params.order) httpParams = httpParams.set('order', params.order);
     if (params.minPrice != null) httpParams = httpParams.set('minPrice', String(params.minPrice));
@@ -132,9 +134,23 @@ export class ProductsApiService {
 
   /**
    * Get a single product by id. Returns null on 404 or error.
+   * Unwraps common response shapes: { product }, { data }, [item], or flat ApiProduct.
    */
   getProductById(id: string | number): Observable<ApiProduct | null> {
-    return this.http.get<ApiProduct>(`${this.base}/api/products/${id}`).pipe(
+    type GetByIdResp = { product?: unknown; data?: unknown } | ApiProduct | unknown[];
+    return this.http.get<GetByIdResp>(`${this.base}/api/products/${id}`).pipe(
+      map((body): ApiProduct | null => {
+        if (body == null || typeof body !== 'object') return null;
+        const b = body as Record<string, unknown>;
+        const inner = b['product'] ?? b['data'];
+        if (inner != null && typeof inner === 'object' && !Array.isArray(inner))
+          return inner as ApiProduct;
+        if (Array.isArray(body) && body.length > 0 && typeof body[0] === 'object')
+          return body[0] as ApiProduct;
+        if (typeof b['name'] !== 'undefined' || typeof b['price'] !== 'undefined' || typeof b['id'] !== 'undefined')
+          return body as ApiProduct;
+        return null;
+      }),
       catchError(() => of(null))
     );
   }
@@ -188,25 +204,34 @@ export function apiProductToUi(p: ApiProduct): UiProduct {
 
 /** Map API product to product-details page UI (images, colors, etc.). */
 export function apiProductToDetails(p: ApiProduct): ProductDetailsUi {
-  const images = p.images?.length ? p.images : [`https://picsum.photos/seed/${p.id}/600/600`];
+  const raw = p as unknown as Record<string, unknown>;
+  const imgList = raw['images'];
+  const imgSingle = raw['image'];
+  const images = Array.isArray(imgList) && imgList.length > 0
+    ? (imgList as string[])
+    : (typeof imgSingle === 'string' && imgSingle ? [imgSingle] : [`https://picsum.photos/seed/${p?.id ?? 'p'}/600/600`]);
   const colors = (p.colors ?? []).map((name, i) => ({
     id: `c${i}`,
     name: String(name),
     hex: colorNameToHex(String(name))
   }));
+  const priceVal = raw['price'] ?? raw['unitPrice'] ?? raw['amount'];
+  const numPrice = Number(priceVal);
+  const price = Number.isFinite(numPrice) ? numPrice : 0;
+  const nameVal = raw['name'] ?? raw['title'];
   return {
-    id: String(p.id),
-    title: p.name || '',
-    description: p.description || '',
+    id: String(p?.id ?? raw['id'] ?? ''),
+    title: (typeof nameVal === 'string' ? nameVal : '') || '',
+    description: (typeof (p?.description ?? raw['description']) === 'string' ? (p?.description ?? raw['description']) : '') || '',
     images,
-    price: p.price,
-    oldPrice: p.originalPrice ?? undefined,
-    rating: p.rating ?? 0,
-    reviewsCount: p.reviewCount ?? 0,
-    badge: (p.discountPercent != null && p.discountPercent > 0) ? 'SALE' : undefined,
+    price,
+    oldPrice: p?.originalPrice != null ? Number(p.originalPrice) : (raw['originalPrice'] != null ? Number(raw['originalPrice']) : undefined),
+    rating: Number(p?.rating ?? raw['rating']) || 0,
+    reviewsCount: Number(p?.reviewCount ?? raw['reviewCount']) || 0,
+    badge: (p?.discountPercent != null && p.discountPercent > 0) ? 'SALE' : undefined,
     specifications: [], // API has no specs
     colors,
-    category: p.category || 'General',
-    currency: p.currency || undefined
+    category: (typeof (p?.category ?? raw['category']) === 'string' ? (p?.category ?? raw['category']) : '') || 'General',
+    currency: (typeof (p?.currency ?? raw['currency']) === 'string' ? (p?.currency ?? raw['currency']) : undefined)
   };
 }

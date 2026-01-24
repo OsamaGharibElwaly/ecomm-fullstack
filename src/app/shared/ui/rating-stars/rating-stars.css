@@ -1,0 +1,22 @@
+.star-half {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 1em;
+  height: 1em;
+}
+
+.star-half-bg {
+  position: absolute;
+  inset: 0;
+  color: #e5e7eb;
+}
+
+.star-half-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #f59e0b;
+}

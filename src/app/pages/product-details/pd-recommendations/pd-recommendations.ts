@@ -11,5 +11,8 @@ export type MiniProduct = { id: string; title: string; price: number; imageUrl: 
 })
 export class RecommendationRowComponent {
   @Input({ required: true }) items!: MiniProduct[];
-  fmt(n: number) { return `$${n.toFixed(2)}`; }
+  fmt(n: number) {
+    const v = (n != null && typeof n === 'number') ? n : 0;
+    return `$${Number(v).toFixed(2)}`;
+  }
 }
