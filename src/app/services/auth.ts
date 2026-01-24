@@ -5,7 +5,7 @@ import { TokenStorageService } from './token-storage';
 import { environment } from '../../environments/environment';
 
 export type LoginDto = { email: string; password: string };
-export type RegisterDto = { email: string; password: string };
+export type RegisterDto = { email: string; password: string; name?: string };
 
 /** API: 200/201 with { token } and optionally { user }. */
 type AuthResponse = { token?: string; accessToken?: string; user?: unknown };
@@ -22,7 +22,13 @@ export class AuthService {
     return !!this.storage.getToken();
   }
 
-  /** POST /api/auth/login — 200 + { token }. */
+  /** Display name: user.name ?? user.username ?? user.email ?? ''. */
+  getDisplayName(): string {
+    const u = this.storage.getUser() as { name?: string; username?: string; email?: string } | null;
+    return (u?.name ?? u?.username ?? u?.email ?? '').trim();
+  }
+
+  /** POST /api/auth/login — 200 + { token } and optionally { user }. */
   login(dto: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.base}/api/auth/login`, dto).pipe(
       tap((res) => {
@@ -34,13 +40,15 @@ export class AuthService {
     );
   }
 
-  /** POST /api/auth/register — 201 + { token }. */
+  /** POST /api/auth/register — 201 + { token }. Sends { email, password, name? }. Sets user from res.user or { name, email } from dto. */
   register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.base}/api/auth/register`, dto).pipe(
+    const body = { email: dto.email, password: dto.password, ...(dto.name && { name: dto.name }) };
+    return this.http.post<AuthResponse>(`${this.base}/api/auth/register`, body).pipe(
       tap((res) => {
         const t = res?.token ?? res?.accessToken;
         if (t) this.storage.setToken(t);
-        if (res?.user != null) this.storage.setUser(res.user);
+        const u = res?.user ?? (dto.name || dto.email ? { name: dto.name, email: dto.email } : undefined);
+        if (u != null) this.storage.setUser(u);
         this._authed$.next(true);
       })
     );

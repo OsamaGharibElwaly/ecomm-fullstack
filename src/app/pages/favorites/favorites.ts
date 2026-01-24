@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { PageTopbarComponent } from '../../shared/ui/page-topbar/page-topbar';
 import { CartService } from '../../shared/data/cart';
 import { FavoritesService, FavoriteItem } from '../../shared/data/favorites';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-favorites-page',
@@ -19,6 +21,10 @@ export class FavoritesPage {
   private router = inject(Router);
   private cart = inject(CartService);
   private favoritesService = inject(FavoritesService);
+  private auth = inject(AuthService);
+
+  isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
+  get displayName(): string { return this.auth.getDisplayName(); }
 
   cartCount = this.cart.count;
   

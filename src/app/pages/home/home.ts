@@ -1,8 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
+import { AuthService } from '../../services/auth';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header';
 import { BottomNavComponent } from '../../shared/ui/bottom-nav/bottom-nav';
 import { SearchBarComponent } from '../../shared/ui/search-bar/search-bar';
@@ -55,8 +57,12 @@ interface Category {
 export class HomePage {
   private router = inject(Router);
   private cart = inject(CartService);
+  private auth = inject(AuthService);
   private favoritesService = inject(FavoritesService);
   private productsApi = inject(ProductsApiService);
+
+  isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
+  get displayName(): string { return this.auth.getDisplayName(); }
 
   // Separate loading states – each section loads independently
   isLoadingHero = signal<boolean>(true);

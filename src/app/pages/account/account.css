@@ -1,0 +1,14 @@
+.account-page :focus-visible {
+  outline: 2px solid #FF7A00;
+  outline-offset: 2px;
+}
+
+.analytics-card:focus-visible {
+  outline: 2px solid #FF7A00;
+  outline-offset: 2px;
+}
+
+.account-link:focus-visible {
+  outline: 2px solid #FF7A00;
+  outline-offset: -2px;
+}

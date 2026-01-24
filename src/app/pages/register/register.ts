@@ -31,6 +31,7 @@ export class RegisterPage {
   constructor() {
     this.form = this.fb.group(
       {
+        name: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
@@ -39,6 +40,7 @@ export class RegisterPage {
     );
   }
 
+  get nameControl() { return this.form.get('name'); }
   get emailControl() { return this.form.get('email'); }
   get passwordControl() { return this.form.get('password'); }
   get confirmControl() { return this.form.get('confirmPassword'); }
@@ -49,9 +51,9 @@ export class RegisterPage {
     if (this.form.invalid) return;
     this.loading = true;
     this.serverError = '';
-    const { email = '', password = '' } = this.form.value;
+    const { name = '', email = '', password = '' } = this.form.value;
 
-    this.auth.register({ email, password }).subscribe({
+    this.auth.register({ email, password, name: name.trim() || undefined }).subscribe({
       next: () => {
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
         this.router.navigateByUrl(returnUrl);

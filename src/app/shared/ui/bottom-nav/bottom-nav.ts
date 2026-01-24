@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -7,4 +9,8 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   templateUrl: './bottom-nav.html',
 })
-export class BottomNavComponent {}
+export class BottomNavComponent {
+  private auth = inject(AuthService);
+
+  isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
+}

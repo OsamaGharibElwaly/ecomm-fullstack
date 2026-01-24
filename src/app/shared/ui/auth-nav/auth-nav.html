@@ -1,0 +1,46 @@
+@if (isLoggedIn()) {
+  <div class="relative">
+    <button
+      type="button"
+      (click)="toggleMenu()"
+      class="flex items-center gap-1.5 text-sm font-semibold text-[#1E1E1E] hover:text-[#FF7A00] bg-transparent border-none cursor-pointer py-1.5 px-2 rounded-lg hover:bg-[#F7F3EF] transition active:scale-[0.98]"
+      aria-haspopup="true"
+      [attr.aria-expanded]="menuOpen()"
+    >
+      <span class="hidden sm:inline">{{ displayName ? 'Hi, ' + displayName + '!' : 'Hi!' }}</span>
+      <span class="sm:hidden">{{ displayName || 'Account' }}</span>
+      <svg class="h-4 w-4 text-[#6B7280] transition-transform" [class.rotate-180]="menuOpen()" viewBox="0 0 24 24" fill="none">
+        <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    @if (menuOpen()) {
+      <div
+        class="absolute right-0 top-full mt-1 min-w-[160px] py-1.5 bg-white rounded-xl shadow-lg border border-[#E5E7EB] z-[200]"
+        role="menu"
+      >
+        <a
+          routerLink="/account"
+          (click)="goAccount()"
+          role="menuitem"
+          class="block px-4 py-2.5 text-sm text-[#1E1E1E] hover:bg-[#F7F3EF] transition"
+        >
+          Account
+        </a>
+        <button
+          type="button"
+          (click)="logout()"
+          role="menuitem"
+          class="w-full text-left px-4 py-2.5 text-sm font-semibold text-[#DC2626] hover:bg-red-50 transition"
+        >
+          Logout
+        </button>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="flex items-center gap-1.5 sm:gap-2 text-sm">
+    <a routerLink="/auth/login" class="font-semibold text-[#FF7A00] hover:underline">Sign in</a>
+    <span class="text-[#D1D5DB]">|</span>
+    <a routerLink="/auth/register" class="font-semibold text-[#1E1E1E] hover:text-[#FF7A00] hover:underline">Sign up</a>
+  </div>
+}

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 
 import { PageTopbarComponent } from '../../shared/ui/page-topbar/page-topbar';
@@ -10,6 +11,7 @@ import { OrderSummary } from './components/order-summary/order-summary';
 import { StickyCheckoutBarComponent } from './components/sticky-checkout-bar/sticky-checkout-bar';
 
 import { CartService } from '../../shared/data/cart';
+import { AuthService } from '../../services/auth';
 import { CartSummarySkeleton } from '../../components/skeleton/cart/cart-summary-skeleton/cart-summary-skeleton';
 import { CartSuggestionsSkeleton } from '../../components/skeleton/cart/cart-suggestions-skeleton/cart-suggestions-skeleton';
 import { CartItemsSkeleton } from '../../components/skeleton/cart/cart-items-skeleton/cart-items-skeleton';
@@ -36,6 +38,10 @@ import { CartItemsSkeleton } from '../../components/skeleton/cart/cart-items-ske
 })
 export class CartPage {
   private cartService = inject(CartService);
+  private auth = inject(AuthService);
+
+  isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
+  get displayName(): string { return this.auth.getDisplayName(); }
 
   isLoading = signal(true);
 
