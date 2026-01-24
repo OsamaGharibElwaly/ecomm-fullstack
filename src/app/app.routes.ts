@@ -1,41 +1,33 @@
 import { Routes } from '@angular/router';
+import { guestGuard } from './guards/guest-guard';
 
 export const routes: Routes = [
-  // Home page route
   {
     path: '',
-    loadComponent: () =>
-      import('./pages/home/home').then((m) => m.HomePage),
+    loadComponent: () => import('./pages/home/home').then((m) => m.HomePage),
   },
-
-  // Product details route with dynamic parameter 'id'
   {
     path: 'product/:id',
-    loadComponent: () =>
-      import('./pages/product-details/product-details').then((m) => m.ProductDetailsPage),
+    loadComponent: () => import('./pages/product-details/product-details').then((m) => m.ProductDetailsPage),
   },
-
-  // Cart page route
   {
     path: 'cart',
-    loadComponent: () =>
-      import('./pages/cart/cart').then((m) => m.CartPage),
+    loadComponent: () => import('./pages/cart/cart').then((m) => m.CartPage),
   },
-
-  // Login page route
   {
     path: 'auth/login',
-    loadComponent: () =>
-      import('./pages/login/login').then((m) => m.LoginComponent),
+    canActivate: [guestGuard],
+    loadComponent: () => import('./pages/login/login').then((m) => m.LoginComponent),
   },
   {
-    path: 'favorites', 
-    loadComponent: () => 
-      import('./pages/favorites/favorites').then(m => m.FavoritesPage),
+    path: 'auth/register',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./pages/register/register').then((m) => m.RegisterPage),
   },
-
-  // 404 Not Found (explicit path for redirects)
+  {
+    path: 'favorites',
+    loadComponent: () => import('./pages/favorites/favorites').then((m) => m.FavoritesPage),
+  },
   { path: '404', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
-  // Catch-all
   { path: '**', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
 ];

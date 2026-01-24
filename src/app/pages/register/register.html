@@ -1,0 +1,129 @@
+<div class="register-page min-h-screen flex flex-col md:flex-row">
+  <!-- Left: branding (hidden on small screens) -->
+  <div class="register-hero hidden md:flex md:w-[42%] lg:w-[44%] flex-col justify-center px-10 lg:px-16 py-12 bg-gradient-to-br from-[#FF7A00] via-[#FF8C2E] to-[#FFB366] text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-[10%] left-[15%] w-64 h-64 rounded-full bg-white/30 blur-3xl"></div>
+      <div class="absolute bottom-[20%] right-[10%] w-48 h-48 rounded-full bg-white/20 blur-2xl"></div>
+    </div>
+    <div class="relative z-10">
+      <h1 class="text-2xl lg:text-3xl font-extrabold leading-tight mb-3">Start your<br />shopping journey</h1>
+      <p class="text-white/90 text-base lg:text-lg max-w-[280px]">Create an account to save favorites, track orders, and get the best offers.</p>
+      <ul class="mt-8 space-y-3 text-sm lg:text-base text-white/95">
+        <li class="flex items-center gap-2">
+          <span class="inline-flex w-5 h-5 rounded-full bg-white/30 items-center justify-center text-xs">✓</span>
+          Save your wishlist
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="inline-flex w-5 h-5 rounded-full bg-white/30 items-center justify-center text-xs">✓</span>
+          Faster checkout
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="inline-flex w-5 h-5 rounded-full bg-white/30 items-center justify-center text-xs">✓</span>
+          Exclusive deals
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Right: form -->
+  <div class="flex-1 flex items-center justify-center px-4 py-10 md:py-12 bg-[#FAFAF9]">
+    <div class="w-full max-w-[400px]">
+      <div class="md:hidden mb-8 text-center">
+        <h1 class="text-xl font-extrabold text-[#1E1E1E]">Create account</h1>
+        <p class="text-[#6B7280] text-sm mt-1">Join us and start shopping</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <h2 class="text-xl font-bold text-[#1E1E1E] mb-1 hidden md:block">Create account</h2>
+        <p class="text-[#6B7280] text-sm mb-6 hidden md:block">Fill in your details to get started</p>
+
+        @if (serverError) {
+          <div class="mb-4 p-3 rounded-xl bg-red-50 text-red-700 text-sm border border-red-100">
+            {{ serverError }}
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+          <div>
+            <label for="reg-email" class="block text-sm font-semibold text-[#1E1E1E] mb-1.5">Email</label>
+            <input
+              id="reg-email"
+              formControlName="email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              class="w-full p-3.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition"
+              [class.border-gray-200]="!emailControl?.invalid || !emailControl?.touched"
+              [class.border-red-400]="emailControl?.invalid && emailControl?.touched"
+              [class.bg-red-50/50]="emailControl?.invalid && emailControl?.touched"
+            />
+            @if (emailControl?.invalid && emailControl?.touched) {
+              <p class="text-red-500 text-xs mt-1.5">
+                @if (emailControl?.hasError('required')) { Email is required }
+                @else if (emailControl?.hasError('email')) { Enter a valid email }
+              </p>
+            }
+          </div>
+
+          <div>
+            <label for="reg-password" class="block text-sm font-semibold text-[#1E1E1E] mb-1.5">Password</label>
+            <input
+              id="reg-password"
+              formControlName="password"
+              type="password"
+              placeholder="At least 6 characters"
+              autocomplete="new-password"
+              class="w-full p-3.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition"
+              [class.border-gray-200]="!passwordControl?.invalid || !passwordControl?.touched"
+              [class.border-red-400]="passwordControl?.invalid && passwordControl?.touched"
+              [class.bg-red-50/50]="passwordControl?.invalid && passwordControl?.touched"
+            />
+            @if (passwordControl?.invalid && passwordControl?.touched) {
+              <p class="text-red-500 text-xs mt-1.5">
+                @if (passwordControl?.hasError('required')) { Password is required }
+                @else if (passwordControl?.hasError('minlength')) { At least 6 characters }
+              </p>
+            }
+            <p class="text-[#9CA3AF] text-xs mt-1">Minimum 6 characters</p>
+          </div>
+
+          <div>
+            <label for="reg-confirm" class="block text-sm font-semibold text-[#1E1E1E] mb-1.5">Confirm password</label>
+            <input
+              id="reg-confirm"
+              formControlName="confirmPassword"
+              type="password"
+              placeholder="Repeat your password"
+              autocomplete="new-password"
+              class="w-full p-3.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition"
+              [class.border-gray-200]="!confirmControl?.invalid && !mismatch"
+              [class.border-red-400]="(confirmControl?.invalid && confirmControl?.touched) || mismatch"
+              [class.bg-red-50/50]="(confirmControl?.invalid && confirmControl?.touched) || mismatch"
+            />
+            @if (confirmControl?.invalid && confirmControl?.touched && !mismatch) {
+              <p class="text-red-500 text-xs mt-1.5">Please confirm your password</p>
+            }
+            @if (mismatch) {
+              <p class="text-red-500 text-xs mt-1.5">Passwords do not match</p>
+            }
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="form.invalid || loading"
+            class="w-full bg-[#FF7A00] text-white py-3.5 rounded-xl font-semibold transition hover:bg-[#e66d00] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ loading ? 'Creating account…' : 'Create account' }}
+          </button>
+
+          <p class="text-center text-sm text-[#6B7280] pt-1">
+            Already have an account?
+            <a routerLink="/auth/login" class="text-[#FF7A00] font-semibold hover:underline">Log in</a>
+          </p>
+        </form>
+      </div>
+
+      <p class="text-center text-xs text-[#9CA3AF] mt-6">By signing up, you agree to our Terms and Privacy policy.</p>
+    </div>
+  </div>
+</div>

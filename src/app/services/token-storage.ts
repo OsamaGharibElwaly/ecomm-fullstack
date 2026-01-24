@@ -1,40 +1,36 @@
+import { Injectable } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
 export class TokenStorageService {
-
-  // استرجاع الـ token
   getToken(): string | null {
-    // تحقق من بيئة المتصفح
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (typeof window !== 'undefined' && window.localStorage)
       return localStorage.getItem('token');
-    }
-    return null; // في حال كان الكود يعمل في بيئة الخادم
+    return null;
   }
 
-  // تعيين الـ token
   setToken(token: string): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (typeof window !== 'undefined' && window.localStorage)
       localStorage.setItem('token', token);
-    }
   }
 
-  // مسح الـ token
   clear(): void {
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   }
 
-  // استرجاع الـ user
-  getUser(): any {
+  getUser(): unknown {
     if (typeof window !== 'undefined' && window.localStorage) {
-      return JSON.parse(localStorage.getItem('user') || '{}');
+      try {
+        return JSON.parse(localStorage.getItem('user') ?? 'null');
+      } catch { return null; }
     }
-    return null; // في حال كان الكود يعمل في بيئة الخادم
+    return null;
   }
 
-  // تعيين الـ user
-  setUser(user: any): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('user', JSON.stringify(user));
-    }
+  setUser(user: unknown): void {
+    if (typeof window !== 'undefined' && window.localStorage)
+      localStorage.setItem('user', JSON.stringify(user ?? {}));
   }
 }
