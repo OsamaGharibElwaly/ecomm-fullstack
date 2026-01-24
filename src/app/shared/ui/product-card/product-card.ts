@@ -11,6 +11,7 @@ type Product = {
   badge?: 'NEW' | 'SALE';
   imageUrl: string;
   liked?: boolean;
+  currency?: string;
 };
 
 @Component({
@@ -32,7 +33,9 @@ export class ProductCard {
 
 
   formatPrice(n: number) {
-    return `$${n.toFixed(2)}`;
+    const c = this.product.currency ?? '$';
+    if (c === '$') return `$${n.toFixed(2)}`;
+    return `${n.toFixed(2)} ${c}`;
   }
   onToggleLike(event: Event) {
     event.stopPropagation();

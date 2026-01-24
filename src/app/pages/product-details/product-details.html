@@ -14,8 +14,8 @@
         <div class="min-w-0 lg:sticky lg:top-6">
           <div class="w-full overflow-hidden rounded-3xl">
             <app-pd-hero
-              [badge]="product().badge"
-              [images]="product().images"
+              [badge]="p().badge"
+              [images]="p().images"
             />
           </div>
         </div>
@@ -23,26 +23,29 @@
         <!-- Details Card -->
         <div class="min-w-0 rounded-3xl bg-white/70 backdrop-blur p-4 sm:p-6 shadow-sm">
           <app-pd-info
-            [title]="product().title"
-            [price]="product().price"
-            [oldPrice]="product().oldPrice"
-            [rating]="product().rating"
-            [reviewsCount]="product().reviewsCount"
+            [title]="p().title"
+            [price]="p().price"
+            [oldPrice]="p().oldPrice"
+            [rating]="p().rating"
+            [reviewsCount]="p().reviewsCount"
             [liked]="liked()"
+            [currency]="p().currency"
             (toggleLike)="onToggleLike()"
           />
 
           <p class="mt-4 text-[#6B7280] text-sm sm:text-base leading-relaxed">
-            {{ product().description }}
+            {{ p().description }}
           </p>
 
           <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <app-color-variants
-              title="COLOR VARIANT"
-              [items]="colors()"
-              [activeId]="activeColorId()"
-              (activeIdChange)="onColorChange($event)"
-            />
+            @if (colors().length > 0) {
+              <app-color-variants
+                title="COLOR VARIANT"
+                [items]="colors()"
+                [activeId]="activeColorId()"
+                (activeIdChange)="onColorChange($event)"
+              />
+            }
 
             @if (isLoadingProduct()) {
               <app-product-details-qty-stepper-skeleton />
@@ -76,14 +79,13 @@
               <div class="mt-4">
                 @switch (activeTab()) {
                   @case ('description') {
-                    <div class="text-sm sm:text-base text-[#374151] leading-relaxed">
-                      This limited-edition headset features custom-tuned drivers that deliver high-fidelity sound.
-                      The memory foam ear cups provide lasting comfort for marathon gaming sessions.
+                    <div class="text-sm sm:text-base text-[#374151] leading-relaxed whitespace-pre-line">
+                      {{ p().description }}
                     </div>
                   }
                   @case ('specs') {
                     <ul class="space-y-2 text-sm sm:text-base text-[#374151]">
-                      @for (s of product().specifications || []; track $index) {
+                      @for (s of p().specifications; track $index) {
                         <li class="flex gap-2 min-w-0">
                           <span class="mt-2 h-2 w-2 rounded-full bg-[#FF7A00] shrink-0"></span>
                           <span class="min-w-0 break-words">{{ s }}</span>
@@ -129,7 +131,7 @@
       <app-product-details-sticky-cart-skeleton />
     } @else {
       <app-sticky-add-to-cart
-        [price]="product().price"
+        [price]="p().price"
         [qty]="qty()"
         (add)="addToCart()"
       />

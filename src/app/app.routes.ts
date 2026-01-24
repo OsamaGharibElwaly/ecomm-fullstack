@@ -34,10 +34,8 @@ export const routes: Routes = [
       import('./pages/favorites/favorites').then(m => m.FavoritesPage),
   },
 
-  // 404 Not Found page route
-  {
-    path: '**',
-    loadComponent: () =>
-      import('./pages/not-found/not-found').then((m) => m.NotFoundPage),
-  },
+  // 404 Not Found (explicit path for redirects)
+  { path: '404', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
+  // Catch-all
+  { path: '**', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
 ];

@@ -61,14 +61,20 @@
                 <div class="min-w-0 w-full overflow-hidden">
                   <app-product-card
                     [product]="{
-                      ...p,
-                      badge: (p.badge === 'NEW' || p.badge === 'SALE') ? p.badge : undefined
+                      id: p.id,
+                      title: p.title,
+                      category: p.category,
+                      price: p.price,
+                      oldPrice: p.oldPrice,
+                      rating: p.rating,
+                      badge: (p.badge === 'NEW' || p.badge === 'SALE') ? p.badge : undefined,
+                      imageUrl: p.imageUrl,
+                      currency: p.currency
                     }"
                     [isFavorite]="isFavorite(p.id)"
                     (click)="onProductClick(p.id)"
                     (toggleLike)="onToggleLike(p.id)"
                     (addToCart)="onAddToCart(p.id)"
-                    (imgError)="onImgError($event)"
                   />
                 </div>
               } @empty {
@@ -77,6 +83,18 @@
                 </div>
               }
             </div>
+            @if (!isLoadingProducts() && hasMore() && filteredProducts().length > 0) {
+              <div class="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  (click)="loadMore()"
+                  [disabled]="isLoadingMore()"
+                  class="rounded-2xl bg-[#FF7A00] px-6 py-3 text-white font-bold shadow hover:bg-[#E66A00] disabled:opacity-60 disabled:cursor-not-allowed transition"
+                >
+                  @if (isLoadingMore()) { Loading… } @else { Load more }
+                </button>
+              </div>
+            }
           </div>
         }
 

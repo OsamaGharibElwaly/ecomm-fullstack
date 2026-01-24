@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import { HomeFeaturedProductsSkeleton } from '../../components/skeleton/home/hom
 
 import { CartService } from '../../shared/data/cart';
 import { FavoritesService } from '../../shared/data/favorites';
-import { PRODUCTS, Product as DataProduct } from '../../shared/data/product.data';
+import { ProductsApiService, apiProductToUi, UiProduct } from '../../services/products-api';
 
 type CategoryIcon = 'grid' | 'monitor' | 'hanger' | 'sofa' | 'dumbbell';
 
@@ -26,11 +26,6 @@ interface Category {
   id: string;
   name: string;
   icon: CategoryIcon;
-}
-
-interface UiProduct extends DataProduct {
-  category: string;
-  imageUrl: string;
 }
 
 @Component({
@@ -61,11 +56,15 @@ export class HomePage {
   private router = inject(Router);
   private cart = inject(CartService);
   private favoritesService = inject(FavoritesService);
+  private productsApi = inject(ProductsApiService);
 
   // Separate loading states – each section loads independently
   isLoadingHero = signal<boolean>(true);
   isLoadingCategories = signal<boolean>(true);
   isLoadingProducts = signal<boolean>(true);
+  isLoadingMore = signal<boolean>(false);
+  hasMore = signal<boolean>(true);
+  currentPage = signal<number>(1);
 
   // Signals
   cartCount = this.cart.count;
@@ -73,64 +72,33 @@ export class HomePage {
   search = signal<string>('');
   activeCategoryId = signal<string>('all');
 
-  // Products (initialized from static data)
-  products = signal<UiProduct[]>(
-    PRODUCTS.map(p => ({
-      ...p,
-      category: p.category ?? 'General',
-      imageUrl: p.images?.[0] ?? `https://picsum.photos/seed/${p.id || 'prod'}/300/400`
-    }))
-  );
+  products = signal<UiProduct[]>([]);
+  categories = signal<Category[]>([]);
 
-  // Computed categories
-  categories = computed<Category[]>(() => {
-    const map = new Map<string, Category>();
-    map.set('all', { id: 'all', name: 'All', icon: 'grid' });
-
-    for (const p of this.products()) {
-      const name = p.category || 'General';
-      const id = name.toLowerCase().replace(/\s+/g, '-');
-
-      if (!map.has(id)) {
-        map.set(id, {
-          id,
-          name,
-          icon: this.getCategoryIcon(name)
-        });
-      }
-    }
-    return Array.from(map.values());
-  });
-
-  // Filtered products
+  // Client-side search over currently loaded products (category filter is applied by API)
   filteredProducts = computed<UiProduct[]>(() => {
     const query = this.search().trim().toLowerCase();
-    const category = this.activeCategoryId();
-
-    return this.products().filter(p => {
-      const catName = (p.category || 'General').toLowerCase();
-      const matchesCategory = category === 'all' || catName === category;
-      const matchesSearch = !query ||
-        p.title.toLowerCase().includes(query) ||
-        catName.includes(query);
-
-      return matchesCategory && matchesSearch;
-    });
+    if (!query) return this.products();
+    return this.products().filter(p =>
+      p.title.toLowerCase().includes(query) ||
+      (p.category || '').toLowerCase().includes(query)
+    );
   });
 
-  constructor() {
-    // Optional: log initial state
-    console.log('HomePage initialized – products:', this.products().length);
-
-    // Optional: auto-log filtered products when they change
-    effect(() => {
-      console.log('Filtered products updated:', this.filteredProducts().length);
-    });
-  }
-
   ngOnInit() {
-    // Simulate staggered loading (replace with real API calls later)
-    this.simulateDataFetch();
+    // Hero: keep short mock delay for UX
+    setTimeout(() => this.isLoadingHero.set(false), 400);
+    // Categories from API
+    this.productsApi.getCategories().subscribe(cats => {
+      this.categories.set(cats.map(c => ({
+        id: c.id,
+        name: c.name,
+        icon: this.getCategoryIcon(c.name)
+      })));
+      this.isLoadingCategories.set(false);
+    });
+    // First page of products with pagination (limit 12 for performance)
+    this.loadProducts(1, false);
   }
 
   // ─────────────────────────────────────────────
@@ -143,12 +111,18 @@ export class HomePage {
 
   onCategoryChange(id: string) {
     this.activeCategoryId.set(id);
+    this.loadProducts(1, false);
+  }
+
+  loadMore() {
+    if (this.isLoadingMore() || !this.hasMore()) return;
+    this.isLoadingMore.set(true);
+    this.loadProducts(this.currentPage() + 1, true);
   }
 
   onToggleLike(productId: string) {
     const product = this.products().find(p => p.id === productId);
     if (!product) return;
-
     this.favoritesService.toggleFavorite({
       id: product.id,
       title: product.title,
@@ -203,17 +177,36 @@ export class HomePage {
 
   private getCategoryIcon(name: string): CategoryIcon {
     const n = name.toLowerCase();
-    if (n.includes('monitor') || n.includes('screen') || n.includes('display')) return 'monitor';
-    if (n.includes('fashion') || n.includes('clothing') || n.includes('bags')) return 'hanger';
+    if (n.includes('clothing')) return 'hanger';
+    if (n.includes('electronic') || n.includes('monitor') || n.includes('screen') || n.includes('display')) return 'monitor';
+    if (n.includes('gaming') || n.includes('fitness') || n.includes('gym') || n.includes('audio')) return 'dumbbell';
     if (n.includes('furniture') || n.includes('sofa') || n.includes('chair') || n.includes('home')) return 'sofa';
-    if (n.includes('fitness') || n.includes('gym') || n.includes('audio')) return 'dumbbell';
     return 'grid';
   }
 
-  private simulateDataFetch() {
-    // Simulate staggered loading (realistic: hero first, then categories, then products)
-    setTimeout(() => this.isLoadingHero.set(false), 800);       // Hero loads fastest
-    setTimeout(() => this.isLoadingCategories.set(false), 1200); // Categories next
-    setTimeout(() => this.isLoadingProducts.set(false), 1800);   // Products last (biggest)
+  private loadProducts(page: number, append: boolean) {
+    if (!append) {
+      this.products.set([]);
+      this.isLoadingProducts.set(true);
+    }
+    const category = this.activeCategoryId();
+    this.productsApi.getProducts({
+      page,
+      limit: 12,
+      category: category === 'all' ? undefined : category,
+      sortBy: 'createdAt',
+      order: 'desc'
+    }).subscribe(res => {
+      const list = res.list.map(apiProductToUi);
+      if (append) {
+        this.products.update(prev => [...prev, ...list]);
+      } else {
+        this.products.set(list);
+      }
+      this.currentPage.set(res.page);
+      this.hasMore.set(res.page < res.totalPages);
+      this.isLoadingProducts.set(false);
+      this.isLoadingMore.set(false);
+    });
   }
 }

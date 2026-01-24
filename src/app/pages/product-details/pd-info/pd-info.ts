@@ -11,11 +11,14 @@ export class PdInfoComponent {
   @Input() oldPrice?: number;
   @Input({ required: true }) rating!: number;
   @Input({ required: true }) reviewsCount!: number;
+  @Input() currency?: string;
 
   @Input() liked = false;
   @Output() toggleLike = new EventEmitter<void>();
 
   format(n: number) {
-    return `$${n.toFixed(2)}`;
+    const c = this.currency ?? '$';
+    if (c === '$') return `$${n.toFixed(2)}`;
+    return `${n.toFixed(2)} ${c}`;
   }
 }
