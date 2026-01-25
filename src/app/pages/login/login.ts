@@ -1,25 +1,23 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+
+import { AuthFacade } from '../auth/auth.facade';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.html',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  providers: [AuthFacade],
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  readonly f = inject(AuthFacade);
 
   form: FormGroup;
-  loading = false;
-  serverError = '';
 
   constructor() {
     this.form = this.fb.group({
@@ -28,26 +26,16 @@ export class LoginComponent {
     });
   }
 
-  get emailControl() { return this.form.get('email'); }
-  get passwordControl() { return this.form.get('password'); }
+  get emailControl() {
+    return this.form.get('email');
+  }
+  get passwordControl() {
+    return this.form.get('password');
+  }
 
   submit(): void {
     if (this.form.invalid) return;
-    this.loading = true;
-    this.serverError = '';
     const { email = '', password = '' } = this.form.value;
-
-    this.auth.login({ email, password }).subscribe({
-      next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
-        this.router.navigateByUrl(returnUrl);
-      },
-      error: (err) => {
-        this.loading = false;
-        const msg = err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
-        this.serverError = msg;
-      },
-      complete: () => { this.loading = false; },
-    });
+    this.f.login({ email, password });
   }
 }

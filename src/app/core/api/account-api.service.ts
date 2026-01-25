@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, catchError, map } from 'rxjs';
-import { TokenStorageService } from './token-storage';
+import { TokenStorageService } from '../../services/token-storage';
 
 export interface AccountUser {
   name?: string;
@@ -16,11 +16,6 @@ export class AccountApiService {
   private http = inject(HttpClient);
   private storage = inject(TokenStorageService);
 
-  /**
-   * Fetches current user from GET /api/auth/me. Authorization Bearer is added by AuthTokenInterceptor.
-   * On 404/error, falls back to stored user from login/register.
-   * Supports { user } or flat user. createdAt from API when available.
-   */
   getMe(): Observable<AccountUser | null> {
     return this.http
       .get<AccountUser | { user?: AccountUser }>('/api/auth/me')
@@ -35,7 +30,7 @@ export class AccountApiService {
         catchError(() => {
           const u = this.storage.getUser() as AccountUser | null;
           return of(u ?? null);
-        })
+        }),
       );
   }
 }

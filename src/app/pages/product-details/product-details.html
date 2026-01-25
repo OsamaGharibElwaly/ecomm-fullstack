@@ -4,7 +4,7 @@
     <div class="mx-auto w-full max-w-[1200px] px-3 pt-3 sm:px-6 sm:pt-4 md:px-6">
       <app-page-topbar
         title="Product Details"
-        [cartCount]="cartCount()"
+        [cartCount]="f.cartCount()"
         backLink="/"
       />
 
@@ -14,9 +14,9 @@
         <div class="min-w-0 lg:sticky lg:top-6">
           <div class="w-full overflow-hidden rounded-3xl">
             <app-pd-hero
-              [badge]="p().badge"
-              [images]="p().images"
-              [selectedColorHex]="activeColorHex()"
+              [badge]="f.p().badge"
+              [images]="f.p().images"
+              [selectedColorHex]="f.activeColorHex()"
             />
           </div>
         </div>
@@ -24,43 +24,43 @@
         <!-- Details Card -->
         <div class="min-w-0 rounded-3xl bg-white/70 backdrop-blur p-4 sm:p-6 shadow-sm">
           <app-pd-info
-            [title]="p().title"
-            [price]="p().price"
-            [oldPrice]="p().oldPrice"
-            [rating]="p().rating"
-            [reviewsCount]="p().reviewsCount"
-            [liked]="liked()"
-            [currency]="p().currency"
-            (toggleLike)="onToggleLike()"
+            [title]="f.p().title"
+            [price]="f.p().price"
+            [oldPrice]="f.p().oldPrice"
+            [rating]="f.p().rating"
+            [reviewsCount]="f.p().reviewsCount"
+            [liked]="f.liked()"
+            [currency]="f.p().currency"
+            (toggleLike)="f.onToggleLike()"
           />
 
           <p class="mt-4 text-[#6B7280] text-sm sm:text-base leading-relaxed">
-            {{ p().description }}
+            {{ f.p().description }}
           </p>
 
           <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-            @if (colors().length > 0) {
+            @if (f.colors().length > 0) {
               <app-color-variants
                 title="COLOR VARIANT"
-                [items]="colors()"
-                [activeId]="activeColorId()"
-                (activeIdChange)="onColorChange($event)"
+                [items]="f.colors()"
+                [activeId]="f.activeColorId()"
+                (activeIdChange)="f.onColorChange($event)"
               />
             }
 
-            @if (isLoadingProduct()) {
+            @if (f.isLoadingProduct()) {
               <app-product-details-qty-stepper-skeleton />
             } @else {
               <app-qty-stepper
                 title="QUANTITY"
-                [value]="qty()"
-                (valueChange)="onQtyChange($event)"
+                [value]="f.qty()"
+                (valueChange)="f.onQtyChange($event)"
               />
             }
           </div>
 
           <div class="mt-6">
-            @if (isLoadingProduct()) {
+            @if (f.isLoadingProduct()) {
               <app-product-details-tabs-skeleton />
             } @else {
               <div class="min-w-0 overflow-x-auto [-webkit-overflow-scrolling:touch]">
@@ -69,24 +69,24 @@
                     [tabs]="[
                       { key: 'description', label: 'Description' },
                       { key: 'specs', label: 'Specifications' },
-                      { key: 'reviews', label: reviewsLabel() }
+                      { key: 'reviews', label: f.reviewsLabel() }
                     ]"
-                    [active]="activeTab()"
-                    (activeChange)="onTabChange($event)"
+                    [active]="f.activeTab()"
+                    (activeChange)="f.onTabChange($event)"
                   />
                 </div>
               </div>
 
               <div class="mt-4">
-                @switch (activeTab()) {
+                @switch (f.activeTab()) {
                   @case ('description') {
                     <div class="text-sm sm:text-base text-[#374151] leading-relaxed whitespace-pre-line">
-                      {{ p().description }}
+                      {{ f.p().description }}
                     </div>
                   }
                   @case ('specs') {
                     <ul class="space-y-2 text-sm sm:text-base text-[#374151]">
-                      @for (s of p().specifications; track $index) {
+                      @for (s of f.p().specifications; track $index) {
                         <li class="flex gap-2 min-w-0">
                           <span class="mt-2 h-2 w-2 rounded-full bg-[#FF7A00] shrink-0"></span>
                           <span class="min-w-0 break-words">{{ s }}</span>
@@ -113,12 +113,12 @@
             </div>
 
             <div class="mt-4 min-w-0">
-              @if (isLoadingRecommendations()) {
+              @if (f.isLoadingRecommendations()) {
                 <app-product-details-recommendations-skeleton />
               } @else {
                 <div class="min-w-0 overflow-x-auto [-webkit-overflow-scrolling:touch]">
                   <div class="min-w-max">
-                    <app-recommendation-row [items]="recommendations()" />
+                    <app-recommendation-row [items]="f.recommendations()" />
                   </div>
                 </div>
               }
@@ -128,13 +128,13 @@
       </div>
     </div>
 
-    @if (isLoadingProduct()) {
+    @if (f.isLoadingProduct()) {
       <app-product-details-sticky-cart-skeleton />
     } @else {
       <app-sticky-add-to-cart
-        [price]="p().price"
-        [qty]="qty()"
-        (add)="addToCart()"
+        [price]="f.p().price"
+        [qty]="f.qty()"
+        (add)="f.addToCart()"
       />
     }
 

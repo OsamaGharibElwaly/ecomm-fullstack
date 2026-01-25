@@ -1,18 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { TokenStorageService } from './token-storage';
 import { AuthStore } from './auth-store';
+import { AuthApiService, type LoginDto, type RegisterDto } from '../core/api/auth-api.service';
 
-export type LoginDto = { email: string; password: string };
-export type RegisterDto = { email: string; password: string; name?: string };
-
-/** API: 200/201 with { token } and optionally { user }. */
-type AuthResponse = { token?: string; accessToken?: string; user?: unknown };
+export type { LoginDto, RegisterDto };
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
+  private authApi = inject(AuthApiService);
   private storage = inject(TokenStorageService);
   private authStore = inject(AuthStore);
   private _authed$ = new BehaviorSubject<boolean>(!!this.authStore.token());
@@ -22,35 +18,31 @@ export class AuthService {
     return !!this.authStore.token();
   }
 
-  /** Display name: user.name ?? user.username ?? user.email ?? ''. */
   getDisplayName(): string {
     const u = this.storage.getUser() as { name?: string; username?: string; email?: string } | null;
     return (u?.name ?? u?.username ?? u?.email ?? '').trim();
   }
 
-  /** POST /api/auth/login — 200 + { token } and optionally { user }. */
-  login(dto: LoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', dto).pipe(
+  login(dto: LoginDto): Observable<{ token?: string; accessToken?: string; user?: unknown }> {
+    return this.authApi.login(dto).pipe(
       tap((res) => {
         const t = res?.token ?? res?.accessToken;
         if (t) this.authStore.setToken(t);
         if (res?.user != null) this.storage.setUser(res.user);
         this._authed$.next(true);
-      })
+      }),
     );
   }
 
-  /** POST /api/auth/register — 201 + { token }. Sends { email, password, name? }. Sets user from res.user or { name, email } from dto. */
-  register(dto: RegisterDto): Observable<AuthResponse> {
-    const body = { email: dto.email, password: dto.password, ...(dto.name && { name: dto.name }) };
-    return this.http.post<AuthResponse>('/api/auth/register', body).pipe(
+  register(dto: RegisterDto): Observable<{ token?: string; accessToken?: string; user?: unknown }> {
+    return this.authApi.register(dto).pipe(
       tap((res) => {
         const t = res?.token ?? res?.accessToken;
         if (t) this.authStore.setToken(t);
         const u = res?.user ?? (dto.name || dto.email ? { name: dto.name, email: dto.email } : undefined);
         if (u != null) this.storage.setUser(u);
         this._authed$.next(true);
-      })
+      }),
     );
   }
 

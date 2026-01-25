@@ -4,7 +4,7 @@
     <div class="mx-auto w-full max-w-[1200px] px-3 pt-3 sm:px-6 sm:pt-4 md:px-6">
       <app-page-topbar
         title="My Favorites"
-        [cartCount]="cartCount()"
+        [cartCount]="f.cartCount()"
         backLink="/"
       />
 
@@ -22,9 +22,9 @@
                 Your Collection
               </h1>
               <p class="text-sm sm:text-base text-[#6B7280] mt-1">
-                @if (isLoggedIn() && displayName) { Hi, {{ displayName }}! · }
-                @else if (isLoggedIn()) { Hi! · }
-                {{ favoriteCount() }} {{ favoriteCount() === 1 ? 'item' : 'items' }} saved
+                @if (f.isLoggedIn() && f.displayName) { Hi, {{ f.displayName }}! · }
+                @else if (f.isLoggedIn()) { Hi! · }
+                {{ f.favoriteCount() }} {{ f.favoriteCount() === 1 ? 'item' : 'items' }} saved
               </p>
             </div>
           </div>
@@ -35,7 +35,7 @@
         <div class="absolute bottom-0 left-1/3 w-24 h-24 bg-[#FF7A00]/20 rounded-full blur-2xl"></div>
       </div>
 
-      @if (isLoading()) {
+      @if (f.isLoading()) {
         <!-- Loading Skeletons -->
         <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           @for (i of [1,2,3,4,5,6]; track i) {
@@ -48,7 +48,7 @@
             </div>
           }
         </div>
-      } @else if (favorites().length === 0) {
+      } @else if (f.favorites().length === 0) {
         <!-- Empty State -->
         <div class="mt-12 flex flex-col items-center justify-center py-16 px-4">
           <div class="relative">
@@ -68,7 +68,7 @@
           </p>
           
           <button 
-            (click)="goToHome()"
+            (click)="f.goToHome()"
             class="mt-8 group relative overflow-hidden rounded-2xl bg-[#FF7A00] px-8 py-4 text-white font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <span class="relative z-10">Browse Products</span>
             <div class="absolute inset-0 bg-gradient-to-r from-[#FF7A00] to-[#FFD400] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -77,20 +77,20 @@
       } @else {
         <!-- Favorites Grid -->
         <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          @for (item of favorites(); track item.id) {
+          @for (item of f.favorites(); track item.id) {
             <div 
               class="group relative rounded-3xl bg-white/70 backdrop-blur p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-transparent hover:border-[#FF7A00]/20"
-              (click)="goToProduct(item.id)">
+              (click)="f.goToProduct(item.id)">
               
               <!-- Image Container -->
               <div class="relative aspect-square overflow-hidden rounded-2xl bg-[#F3F4F6]">
                 <img
-                  [ngSrc]="hasImageError(item.id) ? IMAGE_FALLBACK_URL : (item.imageUrl || IMAGE_FALLBACK_URL)"
+                  [ngSrc]="f.hasImageError(item.id) ? f.IMAGE_FALLBACK_URL : (item.imageUrl || f.IMAGE_FALLBACK_URL)"
                   [alt]="item.title"
                   width="400"
                   height="400"
                   placeholder="https://picsum.photos/seed/placeholder/40/40"
-                  (error)="onImgError(item.id)"
+                  (error)="f.onImgError(item.id)"
                   class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 
@@ -103,7 +103,7 @@
 
                 <!-- Remove Button -->
                 <button 
-                  (click)="removeFavorite($event, item.id)"
+                  (click)="f.removeFavorite($event, item.id)"
                   class="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-lg hover:bg-[#FF7A00] hover:scale-110 transition-all duration-300 group/remove z-10">
                   <svg class="h-5 w-5 text-[#FF7A00] group-hover/remove:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -153,19 +153,19 @@
                   <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  <span>Added {{ getRelativeTime(item.addedAt) }}</span>
+                  <span>Added {{ f.getRelativeTime(item.addedAt) }}</span>
                 </div>
               </div>
 
               <!-- Quick Actions -->
               <div class="mt-4 flex gap-2">
                 <button 
-                  (click)="quickAddToCart($event, item)"
+                  (click)="f.quickAddToCart($event, item)"
                   class="flex-1 rounded-xl bg-[#FF7A00] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#E66D00] transition-colors shadow-md hover:shadow-lg">
                   Add to Cart
                 </button>
                 <button 
-                  (click)="goToProduct(item.id)"
+                  (click)="f.goToProduct(item.id)"
                   class="rounded-xl bg-[#F3F4F6] px-4 py-2.5 text-sm font-bold text-[#111827] hover:bg-[#E5E7EB] transition-colors">
                   View
                 </button>
@@ -186,7 +186,7 @@
           </div>
           
           <button 
-            (click)="clearAllFavorites()"
+            (click)="f.clearAllFavorites()"
             class="text-sm font-medium text-[#FF7A00] hover:text-[#E66D00] transition-colors">
             Clear All
           </button>

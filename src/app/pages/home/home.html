@@ -3,15 +3,15 @@
 
     <!-- Header with Favorites, Cart & Auth -->
     <app-app-header 
-      [cartCount]="cartCount()" 
-      [favoriteCount]="favoriteCount()"
-      (favoritesClick)="goToFavorites()"
+      [cartCount]="f.cartCount()" 
+      [favoriteCount]="f.favoriteCount()"
+      (favoritesClick)="f.goToFavorites()"
     />
 
     <!-- Welcome block -->
     <section class="mt-5 sm:mt-6 rounded-2xl border-l-4 border-[#FF7A00] bg-white/70 backdrop-blur px-4 sm:px-5 py-4 sm:py-5 shadow-sm">
-      @if (isLoggedIn()) {
-        <h2 class="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">Welcome back{{ displayName ? ', ' + displayName : '' }}!</h2>
+      @if (f.isLoggedIn()) {
+        <h2 class="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">Welcome back{{ f.displayName ? ', ' + f.displayName : '' }}!</h2>
         <p class="text-[#6B7280] mt-1 text-sm sm:text-base">Good to see you. Here’s what’s new for you.</p>
       } @else {
         <h2 class="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">Welcome to ShopHub</h2>
@@ -32,12 +32,12 @@
         <!-- Search bar – ثابت أو skeleton صغير لو عايز -->
         <app-search-bar
           placeholder="Search for products, brands..."
-          [value]="search()"
-          (valueChange)="onSearch($event)"
+          [value]="f.search()"
+          (valueChange)="f.onSearch($event)"
         />
 
         <!-- Hero – loading منفصل -->
-        @if (isLoadingHero()) {
+        @if (f.isLoadingHero()) {
           <app-home-hero-skeleton />
         } @else {
           <div class="mt-5">
@@ -52,29 +52,29 @@
         }
 
         <!-- Categories – loading منفصل -->
-        @if (isLoadingCategories()) {
+        @if (f.isLoadingCategories()) {
           <app-home-categories-skeleton />
         } @else {
           <div class="mt-7 min-w-0">
             <app-section-header title="Categories" actionText="View all" actionLink="/" />
             <div class="mt-4 min-w-0">
               <app-category-chips
-                [items]="categories()"
-                [activeId]="activeCategoryId()"
-                (activeIdChange)="onCategoryChange($event)"
+                [items]="f.categories()"
+                [activeId]="f.activeCategoryId()"
+                (activeIdChange)="f.onCategoryChange($event)"
               />
             </div>
           </div>
         }
 
         <!-- Featured Products – loading منفصل -->
-        @if (isLoadingProducts()) {
+        @if (f.isLoadingProducts()) {
           <app-home-featured-products-skeleton />
         } @else {
           <div class="mt-7 min-w-0">
             <app-section-header title="Featured Products" icon="filter" />
             <div class="mt-4 grid min-w-0 gap-4 sm:gap-5 lg:gap-6 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-              @for (p of filteredProducts(); track p.id; let idx = $index) {
+              @for (p of f.filteredProducts(); track p.id; let idx = $index) {
                 <div class="min-w-0 w-full overflow-hidden">
                   <app-product-card
                     [priority]="idx < 6"
@@ -89,10 +89,10 @@
                       imageUrl: p.imageUrl,
                       currency: p.currency
                     }"
-                    [isFavorite]="isFavorite(p.id)"
-                    (click)="onProductClick(p.id)"
-                    (toggleLike)="onToggleLike(p.id)"
-                    (addToCart)="onAddToCart(p.id)"
+                    [isFavorite]="f.isFavorite(p.id)"
+                    (click)="f.onProductClick(p.id)"
+                    (toggleLike)="f.onToggleLike(p.id)"
+                    (addToCart)="f.onAddToCart(p.id)"
                   />
                 </div>
               } @empty {
@@ -101,15 +101,15 @@
                 </div>
               }
             </div>
-            @if (!isLoadingProducts() && hasMore() && filteredProducts().length > 0) {
+            @if (!f.isLoadingProducts() && f.hasMore() && f.filteredProducts().length > 0) {
               <div class="mt-6 flex justify-center">
                 <button
                   type="button"
-                  (click)="loadMore()"
-                  [disabled]="isLoadingMore()"
+                  (click)="f.loadMore()"
+                  [disabled]="f.isLoadingMore()"
                   class="rounded-2xl bg-[#FF7A00] px-6 py-3 text-white font-bold shadow hover:bg-[#E66A00] disabled:opacity-60 disabled:cursor-not-allowed transition"
                 >
-                  @if (isLoadingMore()) { Loading… } @else { Load more }
+                  @if (f.isLoadingMore()) { Loading… } @else { Load more }
                 </button>
               </div>
             }
@@ -117,7 +117,7 @@
         }
 
         <!-- Auth CTA (guest only) -->
-        @if (!isLoggedIn()) {
+        @if (!f.isLoggedIn()) {
           <div class="mt-8 text-center rounded-2xl bg-gradient-to-r from-[#FFF3E8] to-white px-5 py-6 border border-[#FFE4CC]">
             <p class="text-base sm:text-lg text-[#1E1E1E] font-semibold">
               Create an account to save your favorites and get exclusive deals.
@@ -155,18 +155,18 @@
               <a routerLink="/" class="text-sm font-bold text-[#FF7A00]">See all</a>
             </div>
             <div class="mt-4 space-y-3">
-              @for (p of filteredProducts().slice(0, 3); track p.id) {
+              @for (p of f.filteredProducts().slice(0, 3); track p.id) {
                 <a
                   [routerLink]="['/product', p.id]"
                   class="flex items-center gap-3 rounded-2xl p-2 hover:bg-[#FFF3E8] transition"
                 >
                   <img
-                    [ngSrc]="hasImageError(p.id) ? IMAGE_FALLBACK_URL : (p.imageUrl || IMAGE_FALLBACK_URL)"
+                    [ngSrc]="f.hasImageError(p.id) ? f.IMAGE_FALLBACK_URL : (p.imageUrl || f.IMAGE_FALLBACK_URL)"
                     [alt]="p.title"
                     width="56"
                     height="56"
                     placeholder="https://picsum.photos/seed/placeholder/28/28"
-                    (error)="onImgError(p.id)"
+                    (error)="f.onImgError(p.id)"
                     class="h-14 w-14 rounded-2xl object-cover bg-gray-100"
                   />
                   <div class="min-w-0 flex-1">

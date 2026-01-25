@@ -5,34 +5,34 @@
       <!-- Topbar -->
       <app-page-topbar
         title="Shopping Cart"
-        [cartCount]="itemsSelected()"
+        [cartCount]="f.itemsSelected()"
         backLink="/"
       />
 
       <!-- Greeting & Items badge -->
       <div class="mt-3 flex flex-col items-center justify-center gap-1">
-        @if (isLoggedIn() && displayName) {
-          <span class="text-sm font-medium text-[#1E1E1E]">Hi, {{ displayName }}!</span>
-        } @else if (isLoggedIn()) {
+        @if (f.isLoggedIn() && f.displayName) {
+          <span class="text-sm font-medium text-[#1E1E1E]">Hi, {{ f.displayName }}!</span>
+        } @else if (f.isLoggedIn()) {
           <span class="text-sm font-medium text-[#1E1E1E]">Hi!</span>
         }
         <div
           class="rounded-full bg-white/60 px-4 py-2 text-sm text-[#6B7280] backdrop-blur"
         >
-          {{ itemsSelected() }} Items Selected
+          {{ f.itemsSelected() }} Items Selected
         </div>
       </div>
 
       <!-- Cart Items -->
       <div class="mt-6 space-y-4 sm:space-y-6 mb-10">
-        @if (isLoading()) {
+        @if (f.isLoading()) {
           <app-cart-items-skeleton />
         } @else {
-          @for (item of cart(); track item.id) {
+          @for (item of f.cart(); track item.id) {
             <app-cart-item-card
               [item]="item"
-              (remove)="onRemove($event)"
-              (qtyChange)="onQtyChange(item.id, $event)"
+              (remove)="f.onRemove($event)"
+              (qtyChange)="f.onQtyChange(item.id, $event)"
             />
           }
         }
@@ -40,12 +40,12 @@
 
       <!-- Promo -->
       <div class="mt-7 sm:mt-8">
-        @if (!isLoading()) {
+        @if (!f.isLoading()) {
           <app-promo-code-box
-            [value]="promoCode()"
-            [applied]="promoApplied()"
-            (valueChange)="onPromoChange($event)"
-            (apply)="onApplyPromo()"
+            [value]="f.promoCode()"
+            [applied]="f.promoApplied()"
+            (valueChange)="f.onPromoChange($event)"
+            (apply)="f.onApplyPromo()"
           />
         }
       </div>
@@ -57,24 +57,24 @@
         </div>
 
         <div class="mt-4 sm:mt-5">
-          @if (isLoading()) {
+          @if (f.isLoading()) {
             <app-cart-suggestions-skeleton />
           } @else {
-            <app-bought-together-row [items]="suggestions()" />
+            <app-bought-together-row [items]="f.suggestions()" />
           }
         </div>
       </div>
 
       <!-- Summary -->
       <div class="mt-9 sm:mt-10">
-        @if (isLoading()) {
+        @if (f.isLoading()) {
           <app-cart-summary-skeleton />
         } @else {
           <app-order-summary
-            [subtotal]="subtotal()"
-            [discount]="discount()"
-            [shippingLabel]="shippingLabel()"
-            [total]="total()"
+            [subtotal]="f.subtotal()"
+            [discount]="f.discount()"
+            [shippingLabel]="f.shippingLabel()"
+            [total]="f.total()"
           />
         }
       </div>
@@ -83,7 +83,7 @@
   </div>
 
   <app-sticky-checkout-bar
-    [total]="total()"
-    (checkout)="onCheckout()"
+    [total]="f.total()"
+    (checkout)="f.onCheckout()"
   />
 </div>

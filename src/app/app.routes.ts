@@ -19,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'account',
     canActivate: [authGuard],
-    loadChildren: () => import('./pages/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
+    loadComponent: () => import('./pages/account/account').then((m) => m.AccountPage),
   },
   {
     path: 'auth',

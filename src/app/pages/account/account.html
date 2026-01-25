@@ -4,11 +4,11 @@
 
       <app-page-topbar
         title="My Account"
-        [cartCount]="cartCount()"
+        [cartCount]="f.cartCount()"
         backLink="/"
       />
 
-      @if (isLoading()) {
+      @if (f.isLoading()) {
         <div class="mt-6 animate-pulse space-y-4">
           <div class="h-28 rounded-3xl bg-white/70"></div>
           <div class="grid grid-cols-3 gap-3">
@@ -25,14 +25,14 @@
           <div class="absolute bottom-0 left-0 w-32 h-32 bg-[#FF7A00]/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
           <div class="relative z-10 flex items-center gap-4 sm:gap-5">
             <div class="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FF7A00] text-white text-xl sm:text-2xl font-extrabold shadow-lg">
-              {{ initials() }}
+              {{ f.initials() }}
             </div>
             <div class="min-w-0 flex-1">
               <h1 class="text-xl sm:text-2xl font-extrabold text-[#111827] truncate">
-                {{ displayName || 'My Account' }}
+                {{ f.displayName || 'My Account' }}
               </h1>
-              @if (user()?.email) {
-                <p class="text-sm sm:text-base text-[#6B7280] mt-0.5 truncate">{{ user()?.email }}</p>
+              @if (f.user()?.email) {
+                <p class="text-sm sm:text-base text-[#6B7280] mt-0.5 truncate">{{ f.user()?.email }}</p>
               } @else {
                 <p class="text-sm text-[#9CA3AF] mt-0.5">Signed in</p>
               }
@@ -51,14 +51,14 @@
               </div>
               <div class="min-w-0">
                 <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Member since</p>
-                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ memberSince() }}</p>
+                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ f.memberSince() }}</p>
               </div>
             </div>
           </div>
 
           <button
             type="button"
-            (click)="goToFavorites()"
+            (click)="f.goToFavorites()"
             class="analytics-card text-left rounded-2xl bg-white/90 backdrop-blur p-4 sm:p-5 border border-[#E5E7EB]/60 shadow-sm hover:shadow-md hover:border-[#FF7A00]/20 transition-all active:scale-[0.99]"
           >
             <div class="flex items-center gap-3">
@@ -69,7 +69,7 @@
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Favorites</p>
-                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ favoriteCount() }} {{ favoriteCount() === 1 ? 'item' : 'items' }}</p>
+                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ f.favoriteCount() }} {{ f.favoriteCount() === 1 ? 'item' : 'items' }}</p>
               </div>
               <svg class="h-5 w-5 text-[#9CA3AF] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -79,7 +79,7 @@
 
           <button
             type="button"
-            (click)="goToCart()"
+            (click)="f.goToCart()"
             class="analytics-card text-left rounded-2xl bg-white/90 backdrop-blur p-4 sm:p-5 border border-[#E5E7EB]/60 shadow-sm hover:shadow-md hover:border-[#FF7A00]/20 transition-all active:scale-[0.99]"
           >
             <div class="flex items-center gap-3">
@@ -91,7 +91,7 @@
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Cart</p>
-                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ cartCount() }} {{ cartCount() === 1 ? 'item' : 'items' }} · ${{ cartSubtotal() | number:'1.0-2' }}</p>
+                <p class="text-base sm:text-lg font-extrabold text-[#111827] mt-0.5">{{ f.cartCount() }} {{ f.cartCount() === 1 ? 'item' : 'items' }} · ${{ f.cartSubtotal() | number:'1.0-2' }}</p>
               </div>
               <svg class="h-5 w-5 text-[#9CA3AF] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -110,7 +110,7 @@
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
             <span class="font-semibold flex-1">My Favorites</span>
-            <span class="text-sm text-[#6B7280]">{{ favoriteCount() }} saved</span>
+            <span class="text-sm text-[#6B7280]">{{ f.favoriteCount() }} saved</span>
             <svg class="h-5 w-5 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
@@ -124,14 +124,14 @@
               <path d="M6 7 5 3H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             <span class="font-semibold flex-1">Shopping Cart</span>
-            <span class="text-sm text-[#6B7280]">{{ cartCount() }} items</span>
+            <span class="text-sm text-[#6B7280]">{{ f.cartCount() }} items</span>
             <svg class="h-5 w-5 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </a>
           <button
             type="button"
-            (click)="logout()"
+            (click)="f.logout()"
             class="account-link w-full flex items-center gap-4 px-4 sm:px-5 py-4 text-left text-[#DC2626] hover:bg-red-50/80 transition bg-transparent border-none cursor-pointer"
           >
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
