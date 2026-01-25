@@ -3,10 +3,14 @@
   <a [routerLink]="['/product', product.id]" class="block cursor-pointer">
     <div class="relative overflow-hidden rounded-2xl bg-[#F3F4F6]">
       <img
-        class="block w-full max-w-full object-cover h-32 sm:h-36 lg:h-40"
-        [src]="product.imageUrl || ('https://picsum.photos/seed/' + product.id + '/600/400')"
+        ngSrc="{{ imageError ? IMAGE_FALLBACK_URL : (product.imageUrl || 'https://picsum.photos/seed/' + product.id + '/300/400') }}"
         [alt]="product.title"
-        (error)="onImgError($event)"
+        width="300"
+        height="400"
+        [priority]="priority"
+        [placeholder]="IMAGE_PLACEHOLDER_URL"
+        (error)="onImgError()"
+        class="block w-full max-w-full object-cover h-32 sm:h-36 lg:h-40"
       />
 
       @if (product.badge) {

@@ -1,10 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AuthService } from '../../services/auth';
+import { IMAGE_FALLBACK_URL } from '../../shared/constants/image-fallback';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header';
 import { BottomNavComponent } from '../../shared/ui/bottom-nav/bottom-nav';
 import { SearchBarComponent } from '../../shared/ui/search-bar/search-bar';
@@ -35,6 +36,7 @@ interface Category {
   standalone: true,
   imports: [
     CommonModule,
+    NgOptimizedImage,
     RouterModule,
     ReactiveFormsModule,
 
@@ -63,6 +65,10 @@ export class HomePage {
 
   isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
   get displayName(): string { return this.auth.getDisplayName(); }
+  protected readonly IMAGE_FALLBACK_URL = IMAGE_FALLBACK_URL;
+
+  /** Product ids whose image failed to load (for fallback in trending, etc.). */
+  private imageErrorIds = signal<Set<string>>(new Set());
 
   // Separate loading states – each section loads independently
   isLoadingHero = signal<boolean>(true);
@@ -162,11 +168,17 @@ export class HomePage {
     );
   }
 
-  onImgError(event: Event) {
-    const img = event.target as HTMLImageElement;
-    if (img) {
-      img.src = 'https://picsum.photos/seed/fallback/300/400';
-    }
+  onImgError(productId: string): void {
+    this.imageErrorIds.update((s) => {
+      if (s.has(productId)) return s;
+      const n = new Set(s);
+      n.add(productId);
+      return n;
+    });
+  }
+
+  hasImageError(productId: string): boolean {
+    return this.imageErrorIds().has(productId);
   }
 
   goToFavorites() {

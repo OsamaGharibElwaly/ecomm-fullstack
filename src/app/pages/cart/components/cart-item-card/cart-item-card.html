@@ -27,10 +27,13 @@
              shrink-0 overflow-hidden rounded-2xl bg-[#F3F4F6]"
     >
       <img
-        [src]="item.imageUrl"
+        [ngSrc]="imageError ? IMAGE_FALLBACK_URL : (item.imageUrl || IMAGE_FALLBACK_URL)"
         [alt]="item.title"
+        width="96"
+        height="96"
+        placeholder="https://picsum.photos/seed/placeholder/24/24"
+        (error)="onImgError()"
         class="h-full w-full object-cover"
-        loading="lazy"
       />
 
       @if (item.badge) {

@@ -1,20 +1,18 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { PageTopbarComponent } from '../../shared/ui/page-topbar/page-topbar';
 import { CartService } from '../../shared/data/cart';
 import { FavoritesService, FavoriteItem } from '../../shared/data/favorites';
 import { AuthService } from '../../services/auth';
+import { IMAGE_FALLBACK_URL } from '../../shared/constants/image-fallback';
 
 @Component({
   selector: 'app-favorites-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    PageTopbarComponent,
-  ],
+  imports: [CommonModule, NgOptimizedImage, PageTopbarComponent],
   templateUrl: './favorites.html',
 })
 export class FavoritesPage {
@@ -23,10 +21,13 @@ export class FavoritesPage {
   private favoritesService = inject(FavoritesService);
   private auth = inject(AuthService);
 
+  protected readonly IMAGE_FALLBACK_URL = IMAGE_FALLBACK_URL;
+
   isLoggedIn = toSignal(this.auth.authed$, { initialValue: this.auth.isLoggedIn() });
   get displayName(): string { return this.auth.getDisplayName(); }
 
   cartCount = this.cart.count;
+  private imageErrorIds = signal<Set<string>>(new Set());
   
   isLoading = signal(true);
   favorites = this.favoritesService.favorites;
@@ -70,6 +71,19 @@ export class FavoritesPage {
     if (confirm('Are you sure you want to remove all favorites?')) {
       this.favoritesService.clearAll();
     }
+  }
+
+  onImgError(productId: string): void {
+    this.imageErrorIds.update((s) => {
+      if (s.has(productId)) return s;
+      const n = new Set(s);
+      n.add(productId);
+      return n;
+    });
+  }
+
+  hasImageError(productId: string): boolean {
+    return this.imageErrorIds().has(productId);
   }
 
   getRelativeTime(date: Date): string {

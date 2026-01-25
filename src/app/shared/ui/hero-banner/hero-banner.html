@@ -1,9 +1,13 @@
 <section class="relative overflow-hidden rounded-3xl bg-[#D9D9D9] shadow-sm">
   <img
-    class="w-full object-cover
-           h-56 sm:h-64 md:h-72 lg:h-[360px] xl:h-[420px]"
-    [src]="imageUrl"
+    [ngSrc]="imageError ? IMAGE_FALLBACK_URL : imageUrl"
     alt="Banner"
+    width="1200"
+    height="700"
+    priority
+    [placeholder]="IMAGE_PLACEHOLDER_URL"
+    (error)="onImgError()"
+    class="w-full object-cover h-56 sm:h-64 md:h-72 lg:h-[360px] xl:h-[420px]"
   />
 
   <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>

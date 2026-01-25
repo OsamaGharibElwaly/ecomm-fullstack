@@ -1,0 +1,42 @@
+<div class="min-h-screen w-full bg-[#FFF3E8] flex items-center justify-center px-4">
+  <div class="max-w-md w-full text-center">
+    <!-- Status -->
+    <div class="mb-6">
+      <h1 class="text-8xl font-extrabold text-[#FF7A00] leading-none">{{ status }}</h1>
+    </div>
+
+    <!-- Title & message -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-extrabold text-[#1E1E1E] mb-3">{{ title }}</h2>
+      <p class="text-base text-[#6B7280] mb-2">{{ subtitle }}</p>
+      @if (message && message !== subtitle) {
+        <p class="text-sm text-[#9CA3AF]">{{ message }}</p>
+      }
+      @if (code) {
+        <p class="text-xs text-[#9CA3AF] mt-1">Code: {{ code }}</p>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button
+        type="button"
+        (click)="goHome()"
+        class="px-6 py-3 rounded-2xl bg-[#FF7A00] text-white font-bold shadow-md hover:bg-[#E66A00] active:scale-95 transition-all"
+      >
+        Go to Home
+      </button>
+      <button
+        type="button"
+        (click)="goBack()"
+        class="px-6 py-3 rounded-2xl bg-white text-[#FF7A00] font-bold border-2 border-[#FF7A00] hover:bg-[#FFF3E8] active:scale-95 transition-all"
+      >
+        Go Back
+      </button>
+    </div>
+
+    <div class="mt-8 text-sm text-[#6B7280]">
+      <p>Need help? <a routerLink="/" class="text-[#FF7A00] font-bold hover:underline">Contact Support</a></p>
+    </div>
+  </div>
+</div>

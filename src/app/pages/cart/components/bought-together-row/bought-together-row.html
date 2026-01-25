@@ -3,7 +3,15 @@
     @for (p of items; track p.id) {
       <div class="w-[130px] sm:w-[150px]">
         <div class="h-[110px] sm:h-[120px] rounded-3xl overflow-hidden bg-white/70 shadow-sm">
-          <img [src]="p.imageUrl" [alt]="p.title" class="h-full w-full object-cover" loading="lazy" />
+          <img
+            [ngSrc]="hasImageError(p.id) ? IMAGE_FALLBACK_URL : (p.imageUrl || IMAGE_FALLBACK_URL)"
+            [alt]="p.title"
+            width="150"
+            height="120"
+            placeholder="https://picsum.photos/seed/placeholder/38/30"
+            (error)="onImgError(p.id)"
+            class="h-full w-full object-cover"
+          />
         </div>
 
         <div class="mt-2">

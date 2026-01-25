@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RatingStars } from '../rating-stars/rating-stars';
+import { IMAGE_FALLBACK_URL, IMAGE_PLACEHOLDER_URL } from '../../constants/image-fallback';
 
 type Product = {
   id: string;
@@ -18,19 +20,24 @@ type Product = {
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterModule, RatingStars],
+  imports: [RouterModule, RatingStars, NgOptimizedImage],
   templateUrl: './product-card.html',
 })
 export class ProductCard {
-  onImgError(event: Event) {
-  const img = event.target as HTMLImageElement | null;
-  if (!img) return;
-  img.src = `https://picsum.photos/seed/fallback-${this.product.id}/600/400`;
-}
+  protected readonly IMAGE_FALLBACK_URL = IMAGE_FALLBACK_URL;
+  protected readonly IMAGE_PLACEHOLDER_URL = IMAGE_PLACEHOLDER_URL;
+
   @Input({ required: true }) product!: Product;
-  @Input() isFavorite = false;  // ← ADD THIS LINE
-  @Output() toggleLike = new EventEmitter<string>();  // ← UPDATE THIS (if you already have it)
+  @Input() isFavorite = false;
+  @Input() priority = false;
+  @Output() toggleLike = new EventEmitter<string>();
   @Output() addToCart = new EventEmitter<string>();
+
+  imageError = false;
+
+  onImgError(): void {
+    this.imageError = true;
+  }
 
 
   formatPrice(n: number) {

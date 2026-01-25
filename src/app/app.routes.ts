@@ -1,39 +1,37 @@
 import { Routes } from '@angular/router';
-import { guestGuard } from './guards/guest-guard';
 import { authGuard } from './guards/auth-guard';
+import { NOT_FOUND_ROUTES } from './pages/not-found/not-found.routes';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/home/home').then((m) => m.HomePage),
+    loadChildren: () => import('./pages/home/home.routes').then((m) => m.HOME_ROUTES),
   },
   {
-    path: 'product/:id',
-    loadComponent: () => import('./pages/product-details/product-details').then((m) => m.ProductDetailsPage),
+    path: 'product',
+    loadChildren: () =>
+      import('./pages/product-details/product-details.routes').then((m) => m.PRODUCT_DETAILS_ROUTES),
   },
   {
     path: 'cart',
-    loadComponent: () => import('./pages/cart/cart').then((m) => m.CartPage),
+    loadChildren: () => import('./pages/cart/cart.routes').then((m) => m.CART_ROUTES),
   },
   {
     path: 'account',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/account/account').then((m) => m.AccountPage),
+    loadChildren: () => import('./pages/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
   },
   {
-    path: 'auth/login',
-    canActivate: [guestGuard],
-    loadComponent: () => import('./pages/login/login').then((m) => m.LoginComponent),
-  },
-  {
-    path: 'auth/register',
-    canActivate: [guestGuard],
-    loadComponent: () => import('./pages/register/register').then((m) => m.RegisterPage),
+    path: 'auth',
+    loadChildren: () => import('./pages/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
     path: 'favorites',
-    loadComponent: () => import('./pages/favorites/favorites').then((m) => m.FavoritesPage),
+    loadChildren: () => import('./pages/favorites/favorites.routes').then((m) => m.FAVORITES_ROUTES),
   },
-  { path: '404', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
-  { path: '**', loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage) },
+  {
+    path: 'error',
+    loadChildren: () => import('./pages/error/error.routes').then((m) => m.ERROR_ROUTES),
+  },
+  ...NOT_FOUND_ROUTES,
 ];

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { TokenStorageService } from './token-storage';
-import { environment } from '../../environments/environment';
+import { AuthStore } from './auth-store';
 
 export type LoginDto = { email: string; password: string };
 export type RegisterDto = { email: string; password: string; name?: string };
@@ -14,12 +14,12 @@ type AuthResponse = { token?: string; accessToken?: string; user?: unknown };
 export class AuthService {
   private http = inject(HttpClient);
   private storage = inject(TokenStorageService);
-  private base = environment.apiUrl;
-  private _authed$ = new BehaviorSubject<boolean>(!!this.storage.getToken());
+  private authStore = inject(AuthStore);
+  private _authed$ = new BehaviorSubject<boolean>(!!this.authStore.token());
   authed$ = this._authed$.asObservable();
 
   isLoggedIn(): boolean {
-    return !!this.storage.getToken();
+    return !!this.authStore.token();
   }
 
   /** Display name: user.name ?? user.username ?? user.email ?? ''. */
@@ -30,10 +30,10 @@ export class AuthService {
 
   /** POST /api/auth/login — 200 + { token } and optionally { user }. */
   login(dto: LoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.base}/api/auth/login`, dto).pipe(
+    return this.http.post<AuthResponse>('/api/auth/login', dto).pipe(
       tap((res) => {
         const t = res?.token ?? res?.accessToken;
-        if (t) this.storage.setToken(t);
+        if (t) this.authStore.setToken(t);
         if (res?.user != null) this.storage.setUser(res.user);
         this._authed$.next(true);
       })
@@ -43,10 +43,10 @@ export class AuthService {
   /** POST /api/auth/register — 201 + { token }. Sends { email, password, name? }. Sets user from res.user or { name, email } from dto. */
   register(dto: RegisterDto): Observable<AuthResponse> {
     const body = { email: dto.email, password: dto.password, ...(dto.name && { name: dto.name }) };
-    return this.http.post<AuthResponse>(`${this.base}/api/auth/register`, body).pipe(
+    return this.http.post<AuthResponse>('/api/auth/register', body).pipe(
       tap((res) => {
         const t = res?.token ?? res?.accessToken;
-        if (t) this.storage.setToken(t);
+        if (t) this.authStore.setToken(t);
         const u = res?.user ?? (dto.name || dto.email ? { name: dto.name, email: dto.email } : undefined);
         if (u != null) this.storage.setUser(u);
         this._authed$.next(true);
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.storage.clear();
+    this.authStore.clearToken();
     this._authed$.next(false);
   }
 

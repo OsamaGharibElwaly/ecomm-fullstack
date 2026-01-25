@@ -1,10 +1,14 @@
 <section class="overflow-hidden rounded-3xl bg-[#FF7A00] shadow-sm">
   <div class="relative">
     <img
-      class="w-full object-cover
-             h-[320px] sm:h-[380px] md:h-[420px] lg:h-[520px]"
-      [src]="currentImage"
+      [ngSrc]="imageError ? IMAGE_FALLBACK_URL : currentImage"
       alt="Product"
+      width="600"
+      height="600"
+      priority
+      placeholder="https://picsum.photos/seed/placeholder/40/40"
+      (error)="onImgError()"
+      class="w-full object-cover h-[320px] sm:h-[380px] md:h-[420px] lg:h-[520px]"
     />
 
     @if (selectedColorHex) {

@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, catchError, map } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 /** Raw product shape from backend (https://shopend.vercel.app) */
 export interface ApiProduct {
@@ -88,7 +87,6 @@ function colorNameToHex(name: string): string {
 @Injectable({ providedIn: 'root' })
 export class ProductsApiService {
   private http = inject(HttpClient);
-  private base = environment.apiUrl;
 
   /**
    * Get products with pagination and optional filters.
@@ -116,7 +114,7 @@ export class ProductsApiService {
     if (params.maxPrice != null) httpParams = httpParams.set('maxPrice', String(params.maxPrice));
 
     type ProductsResp = ApiProduct[] | { data?: ApiProduct[]; products?: ApiProduct[]; total?: number; page?: number; totalPages?: number };
-    return this.http.get<ProductsResp>(`${this.base}/api/products`, { params: httpParams }).pipe(
+    return this.http.get<ProductsResp>('/api/products', { params: httpParams }).pipe(
       map((res: ProductsResp) => {
         if (Array.isArray(res)) {
           return { list: res, total: res.length, page: 1, totalPages: 1 };
@@ -138,7 +136,7 @@ export class ProductsApiService {
    */
   getProductById(id: string | number): Observable<ApiProduct | null> {
     type GetByIdResp = { product?: unknown; data?: unknown } | ApiProduct | unknown[];
-    return this.http.get<GetByIdResp>(`${this.base}/api/products/${id}`).pipe(
+    return this.http.get<GetByIdResp>(`/api/products/${id}`).pipe(
       map((body): ApiProduct | null => {
         if (body == null || typeof body !== 'object') return null;
         const b = body as Record<string, unknown>;
@@ -160,7 +158,7 @@ export class ProductsApiService {
    * Fallback to All, CLOTHING, ELECTRONICS, GAMING on error or empty.
    */
   getCategories(): Observable<ApiCategory[]> {
-    return this.http.get<{ name: string; count?: number }[] | ApiCategory[]>(`${this.base}/api/products/categories`).pipe(
+    return this.http.get<{ name: string; count?: number }[] | ApiCategory[]>(`/api/products/categories`).pipe(
       map((raw) => {
         if (!Array.isArray(raw) || raw.length === 0) return this.fallbackCategories();
         return [
