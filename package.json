@@ -9,7 +9,7 @@
     "test": "ng test",
     "serve:ssr:ecomm-fullstack": "node dist/ecomm-fullstack/server/server.mjs"
   },
-  "prettier": {
+  "prettier": { 
     "printWidth": 100,
     "singleQuote": true,
     "overrides": [
