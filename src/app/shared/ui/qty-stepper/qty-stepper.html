@@ -2,14 +2,14 @@
   <div class="text-xs font-extrabold tracking-widest text-[#6B7280]">{{ title }}</div>
 
   <div class="mt-3 flex items-center justify-between rounded-full bg-[#F7F3EF] px-4 h-12">
-    <button type="button" (click)="dec()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" aria-label="minus">
-      <span class="text-[#FF7A00] text-xl font-extrabold">−</span>
+    <button type="button" (click)="dec()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" [attr.aria-label]="'Decrease ' + title + ', current value: ' + value">
+      <span class="text-[#FF7A00] text-xl font-extrabold" aria-hidden="true">−</span>
     </button>
 
-    <div class="font-extrabold text-[#111827]">{{ value }}</div>
+    <div class="font-extrabold text-[#111827]" [attr.aria-live]="'polite'">{{ value }}</div>
 
-    <button type="button" (click)="inc()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" aria-label="plus">
-      <span class="text-[#FF7A00] text-xl font-extrabold">+</span>
+    <button type="button" (click)="inc()" class="h-9 w-9 rounded-full hover:bg-white active:scale-95 transition" [attr.aria-label]="'Increase ' + title + ', current value: ' + value">
+      <span class="text-[#FF7A00] text-xl font-extrabold" aria-hidden="true">+</span>
     </button>
   </div>
 </div>

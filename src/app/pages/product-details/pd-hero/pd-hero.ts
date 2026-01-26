@@ -15,6 +15,8 @@ export class PdHeroComponent {
   @Input({ required: true }) images!: string[];
   /** Hex of selected color variant; when set, shows a tint overlay and a color chip on the image. */
   @Input() selectedColorHex?: string | null;
+  /** Product title for accessible alt text */
+  @Input() productTitle?: string;
 
   active = 0;
   imageError = false;

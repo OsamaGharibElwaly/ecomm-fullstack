@@ -13,10 +13,12 @@
     class="w-full bg-transparent outline-none text-[#1E1E1E]
            placeholder:text-[#B9B9B9]
            text-sm sm:text-base"
-    type="text"
+    type="search"
     [value]="value"
     (input)="valueChange.emit(($any($event.target)).value)"
     [placeholder]="placeholder"
+    [attr.aria-label]="placeholder || 'Search for products'"
+    autocomplete="off"
   />
 
   <!-- optional: filter button on >= md -->

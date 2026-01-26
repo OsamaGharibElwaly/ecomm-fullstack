@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shopend.vercel.app/sitemap.xml

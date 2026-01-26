@@ -2,7 +2,7 @@
   <div class="relative">
     <img
       [ngSrc]="imageError ? IMAGE_FALLBACK_URL : currentImage"
-      alt="Product"
+      [alt]="productTitle || 'Product image'"
       width="600"
       height="600"
       priority
@@ -50,7 +50,8 @@
         class="h-2.5 w-2.5 rounded-full transition"
         [class.bg-white]="$index === active"
         [class.bg-white/40]="$index !== active"
-        aria-label="image dot"
+        [attr.aria-label]="'View product image ' + ($index + 1) + ' of ' + images.length"
+        [attr.aria-current]="$index === active ? 'true' : null"
       ></button>
     }
   </div>
